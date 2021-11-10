@@ -1,0 +1,11 @@
+.idea
+.pytest_cache
+venv
+__pycache__/
+*.pyc
+Tests/
+Patchs
+Binaries/ForTest/
+database/
+/gg.json
+/code_src/accounting/
