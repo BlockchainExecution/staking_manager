@@ -1,0 +1,15 @@
+.idea
+.pytest_cache
+venv
+__pycache__/
+*.pyc
+Tests/
+tests/
+Patchs
+Binaries/ForTest/
+database/
+/gg.json
+draft/
+feature
+LICENSE
+README.md
