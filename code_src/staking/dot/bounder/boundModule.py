@@ -39,6 +39,17 @@ class Bounder(object):
         'module_prefix': 'Staking','module_name': 'Staking', 'spec_version': 9122}
         :return:
         """
+
+        """
+        reward address can be
+        Staked - Pay into the stash account, increasing the amount at stake accordingly.
+        Stash - Pay into the stash account, not increasing the amount at stake.
+        Account - Pay into a custom account, like so: Account DMTHrNcmA8QbqRS4rBq8LXn8ipyczFoNMb1X4cY2WD9tdBX.
+        Controller - Pay into the controller account.
+        
+        -> Stash and Controller can be the same address so if user doesn't specify destination reward address
+        default will be controller address 
+        """
         if not reward_address:
             reward_address = controller_addr
         try:
@@ -168,14 +179,40 @@ class Bounder(object):
         return call
 
     def run(self, active_substrate, seed, call):
+        """
+        :param active_substrate: dot substrate to connect to
+        :param seed: mnemonic phrase to sign the transaction
+        :param call: transition parameters
+        :return:
+        logging information
+        """
+
         this_substrate = active_substrate
         this_keypair = self.getKeyFromSeed(seed=seed)
+        """
+        An extrinsic is a piece of information that comes from outside the chain and is included in a block.
+        Extrinsics fall into three categories: inherents, signed transactions, and unsigned transactions.
+        in our case we use signed transactions for of the extrinsics.
+        for more information please visit : https://wiki.polkadot.network/docs/build-protocol-info#extrinsics
+        """
+        # create a signed transactions using information provided in call
+        # example
+        #         call = active_substrate.compose_call(
+        #             call_module=call_module,
+        #             call_function=call_function,
+        #             call_params={
+        #                 parameters : values,
+        #             }
+        #         )
         extrinsic = this_substrate.create_signed_extrinsic(call=call, keypair=this_keypair)
         try:
+            # submit the signed transactions to the network
             receipt = this_substrate.submit_extrinsic(extrinsic, wait_for_inclusion=True)
+            # return success messages and information
             return self.logger.info(
                 "Extrinsic '{}' sent and included in block '{}'".format(receipt.extrinsic_hash, receipt.block_hash))
 
+        # handel errors
         except SubstrateRequestException as e:
             arg = e.args[0]
             return self.logger.error("%s : %s" % (arg['message'], arg['data']))
