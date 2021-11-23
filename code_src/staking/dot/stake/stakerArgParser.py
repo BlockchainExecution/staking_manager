@@ -1,46 +1,34 @@
+from code_src.staking.dot.bounder.boundModule import Bounder
 from code_src.staking.dot.dotArgparserUtil import actionSeed, actionNumberOfTokens, actionControllerAddress, \
     actionRewardsDestination, \
-    actionValidatorAddress, actionHelp
-from common import MyHelpFormatter
+    actionValidatorAddress, actionHelp, subcommand
+from code_src.staking.dot.nominator.nominatorModule import Nominator
+from common import active_substrate
+from examples import exampleStaker
 
 
 def stakeDotArgParser(parent_parser):
-    # TODO fix example_staker display
-    # stake dot
-    exampleStaker = """
-Description\n
-  This script will bond and nominate DOT to a validator.\n
-
-example:\n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS\n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS -rd/--rewards_destination "REWARD_DESTINATION"\n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS -va/--validator_address "VALIDATOR_ADDRESS"\n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS -va/--validator_address "VALIDATOR_ADDRESS_1","VALIDATOR_ADDRESS_2","VALIDATOR_ADDRESS_N"\n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS -rd/--rewards_destination "REWARD_DESTINATION" -va/--validator_address "VALIDATOR_ADDRESS"\n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS -rd/--rewards_destination "REWARD_DESTINATION" -va/--validator_address "VALIDATOR_ADDRESS_1","VALIDATOR_ADDRESS_2","VALIDATOR_ADDRESS_N"\n
-    """
     # bounder parent parser
-    stakeDotParser = parent_parser.add_parser(name="staker",
-                                              help="automatically prepare coins and send them to be staked (bond coin then nominate a validator).",
-                                              add_help=False, epilog=exampleStaker,
-                                              formatter_class=MyHelpFormatter)
-    stakeDotParser.set_defaults(func="staker")
-    stakeDotParser._action_groups.pop()
+    @subcommand(parent=parent_parser,
+                subHelp="automatically prepare coins and send them to be staked (bond coin then nominate a validator).",
+                epilog=exampleStaker, reqArgs=[actionSeed(), actionControllerAddress(), actionNumberOfTokens()],
+                optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
+    def staker(args):
+        bounderInstance = Bounder()
+        # args from cli
+        nominateInstance = Nominator()
+        seed = args.seed
+        controllerAddress = args.controller_address
+        number_of_tokens = args.number_of_tokens
+        rewards_destination = args.rewards_destination
+        validator_address = args.validator_address
 
-    stakeDotRequiredArguments = stakeDotParser.add_argument_group('required arguments')
-    stakeDotOptionalArguments = stakeDotParser.add_argument_group('optional arguments')
+        bondFunc = bounderInstance.bond(active_substrate=active_substrate, value=number_of_tokens,
+                                        controller_addr=controllerAddress,
+                                        reward_address=rewards_destination)
 
-    # seed
-    actionSeed(stakeDotRequiredArguments)
-    # ca
-    actionControllerAddress(stakeDotRequiredArguments)
-    # nt
-    actionNumberOfTokens(stakeDotRequiredArguments)
-    # rd
-    actionRewardsDestination(stakeDotOptionalArguments)
-    # va
-    actionValidatorAddress(stakeDotOptionalArguments)
-    # help
-    actionHelp(stakeDotOptionalArguments)
+        bounderInstance.run(active_substrate=active_substrate, seed=seed, call=bondFunc)
 
-    return stakeDotParser
+        nominateFunc = nominateInstance.nominate(active_substrate=active_substrate,
+                                                 targets=validator_address)
+        nominateInstance.run(active_substrate=active_substrate, seed=seed, call=nominateFunc)

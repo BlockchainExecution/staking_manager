@@ -8,6 +8,8 @@ def get_project_root_dir():
 
 
 # websockets ---------------------------------------
+# substrate are a modular framework for building blockchains.
+# Polkadot is built using Substrate. Chains built with Substrate will be easy to connect as parachains.
 # dot
 def substratePolkadot():
     substrate_polkadot = SubstrateInterface(
