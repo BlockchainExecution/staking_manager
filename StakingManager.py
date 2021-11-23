@@ -1,9 +1,11 @@
 import argparse
-from code_src.staking.dot.accounting.accountingArgParser import accountingArgParser
-from code_src.staking.dot.nominator.nominatorArgParser import nominatorArgParser
-from code_src.staking.dot.bounder.bounderArgParser import bounderArgParser
-from code_src.staking.dot.stake.stakerArgParser import stakeDotArgParser
+from code_src.staking.dot.arg_parser.accountingArgParser import accountingArgParser
+from code_src.staking.dot.arg_parser.beforeIStartArgParser import beforeIStartArgParser
+from code_src.staking.dot.arg_parser.nominatorArgParser import nominatorArgParser
+from code_src.staking.dot.arg_parser.bounderArgParser import bounderArgParser
+from code_src.staking.dot.arg_parser.stakerArgParser import stakeDotArgParser
 from Logger import myLogger
+from code_src.staking.dot.arg_parser.validatorArgParser import validatorDotArgParser
 
 __name = "StakingManager"
 logger = myLogger(__name)
@@ -58,6 +60,8 @@ accounting = accountingArgParser(dotSubParser)
 staker = stakeDotArgParser(dotSubParser)
 nominator = nominatorArgParser(dotSubParser)
 bounder = bounderArgParser(dotSubParser)
+validator = validatorDotArgParser(dotSubParser)
+guide = beforeIStartArgParser(dotSubParser)
 # xtz
 # xtzSubParser = xtzParentParser.add_subparsers(dest="xtz", help='Available xtz staking commands')
 
@@ -92,10 +96,19 @@ if __name__ == "__main__":
                 # accounting
                 elif dot == "accounting":
                     try:
-                        print(args)
+                        # print(args)
                         args.func(args)
                     except AttributeError:
                         accounting.print_help()
+                # TODO
+                elif dot == "validator":
+                    pass
+                elif dot == "guide":
+                    try:
+                        # print(args)
+                        args.func(args)
+                    except AttributeError:
+                        guide.print_help()
 
             else:
                 dotParentParser.print_help()

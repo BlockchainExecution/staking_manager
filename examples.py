@@ -141,3 +141,13 @@ example:\n
   python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS -rd/--rewards_destination "REWARD_DESTINATION" -va/--validator_address "VALIDATOR_ADDRESS"\n
   python %(prog)s -s/--seed "MNEMONIC_PHRASE" -ca/--controller_address "CONTROLLER_ADDRESS" -nt/--number_of_tokens NUMBER_OF_TOKENS -rd/--rewards_destination "REWARD_DESTINATION" -va/--validator_address "VALIDATOR_ADDRESS_1","VALIDATOR_ADDRESS_2","VALIDATOR_ADDRESS_N"\n
     """
+# validator
+# guide
+exampleGuide = """
+Description
+  Guide interface to Polkadot..
+
+example:
+  python %(prog)s
+
+"""

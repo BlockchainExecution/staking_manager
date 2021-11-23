@@ -4,10 +4,17 @@ from colorlog import ColoredFormatter
 
 def myLogger(name) -> logging:
     LOG_LEVEL = logging.DEBUG
-    LOGFORMAT = "%(log_color)s%(asctime)s%(reset)s - %(log_color)s%(name)s%(reset)s : %(log_color)s[%(levelname)-s]%(reset)s | %(log_color)s%(message)s%(reset)s"
+
+    LOGFORMAT = "%(log_color)s%(name)s%(reset)s : %(log_color)s[%(levelname)-s]%(reset)s | %(log_color)s%(message)s%(reset)s"
 
     logging.root.setLevel(LOG_LEVEL)
-    formatter = ColoredFormatter(LOGFORMAT)
+    formatter = ColoredFormatter(LOGFORMAT, log_colors={
+        'DEBUG':    'white',
+        'INFO':     'cyan',
+        'WARNING':  'yellow',
+        'ERROR':    'red',
+        'CRITICAL': 'red',
+    })
     stream = logging.StreamHandler()
     stream.setLevel(LOG_LEVEL)
     stream.setFormatter(formatter)

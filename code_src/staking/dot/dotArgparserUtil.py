@@ -1,14 +1,18 @@
 from common import MyHelpFormatter
+from config import activeConfig
 
 
 def argument(*name_or_flags, **kwargs):
     """Convenience function to properly format arguments to pass to the
     subcommand decorator.
     """
-    return ([*name_or_flags], kwargs)
+    return [*name_or_flags], kwargs
 
 
-def subcommand(parent, subHelp="", epilog="", reqArgs=[], optArgs=[]):
+def subcommand(parent, subHelp="", epilog="", reqArgs=None, optArgs=None):
+    if reqArgs is None:
+        reqArgs = []
+
     def decorator(func):
         parser = parent.add_parser(func.__name__, description=func.__doc__, add_help=False, help=subHelp,
                                    formatter_class=MyHelpFormatter, epilog=epilog)
@@ -46,7 +50,7 @@ def actionNumberOfTokens():
     return argument('-nt', '--number_of_tokens',
                     help='The number of DOT you would like to stake to the network.',
                     required=True,
-                    type=int
+                    type=float
                     )
 
 
@@ -59,10 +63,10 @@ Choices supports the following:
   account     - Pay into a custom account, like so: Account DMTHrNcmA8QbqRS4rBq8LXn8ipyczFoNMb1X4cY2WD9tdBX.
   controller  - Pay into the controller account.
 """,
-                    default="staked",
-                    choices=["staked", "stash", "account", "controller"],
+                    default="Staked",
+                    choices=["Staked", "Stash", "Account", "Controller"],
                     required=False,
-                    type=str.lower
+                    type=str
                     )
 
 
@@ -71,7 +75,7 @@ def actionValidatorAddress():
                     help="""
 Address of a Polkadot validators (where to stake coins).It can be one or more address. By default binance validator address will be chosen.
                                     """,
-                    default=["114SUbKCXjmb9czpWTtS3JANSmNRwVa4mmsMrWYpRG1kDH5"],
+                    default=activeConfig.activeValidator,
                     nargs="*",
                     required=False,
                     )
