@@ -11,7 +11,7 @@ def dotCreateKeyPair(logger, mnemonic):
     invalidCharacters = "[@_!#$%^&*()<>?/|}{~:]0123456789"
 
     try:
-        key = Keypair.create_from_mnemonic(mnemonic)
+        key = Keypair.create_from_mnemonic(mnemonic=mnemonic, ss58_format=activeConfig.ss58_format)
         logger.info(f"""create key pair
 
     {key}
@@ -115,6 +115,52 @@ class DotAccountCall:
             pass
 
 
+def checkAccount(ss58_address, tokenNumber, logger):
+    # before we bond any coins we need to check account balance for two main things :
+    #   1 - minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
+    #   2 - active address (Existential Deposit) witch is 1 DOT :
+    #       - NB : If an account drops below the Existential Deposit, the account is reaped (“deactivated”)
+    #           and any remaining funds are destroyed.
+    # so to protect user that use the script and don't know some basics we need to force check value.
+
+    # query balance info for an account
+    accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
+                                                            params=[ss58_address]).value
+
+    # we only need free and reserved information from the balance info
+    free, reserved = accountBalanceInfo['data']['free'], accountBalanceInfo['data']['reserved']
+
+    # we need to calculate account balance vs minimum needed
+    totalAccountBalance = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
+    minimumTotalNeeded = activeConfig.stakeMinimumAmount + activeConfig.existentialDeposit
+
+    # check requirements
+
+    # check decimal writing
+    lenNumberAfterDecimalPoint = len(str(tokenNumber).split(".")[1])
+    if lenNumberAfterDecimalPoint > activeConfig.coinDecimalPlacesLength:
+        logger.warning(
+            f"wrong token value token take max {activeConfig.coinDecimalPlacesLength} number after decimal point")
+        sys.exit(0)
+
+    # we need always to reserve existentialDeposit
+    if totalAccountBalance < minimumTotalNeeded or totalAccountBalance < tokenNumber + activeConfig.existentialDeposit:
+        logger.warning(
+            f"low balance\n"
+            f"actual balance is : {totalAccountBalance} {activeConfig.coinName}\n"
+            f"requested amount : {tokenNumber} {activeConfig.coinName}\n"
+            f"why this happen your account need to have a minimum of {activeConfig.existentialDeposit} "
+            f"{activeConfig.coinName} plus the requested amount wish is not the case "
+            f"{activeConfig.existentialDeposit} + {tokenNumber} != {totalAccountBalance}")
+        sys.exit(0)
+
+    # account has minimum requirements
+    # check for token number vs account balance
+    if tokenNumber < activeConfig.stakeMinimumAmount:
+        logger.warning(f"staking minimum amount is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}")
+        sys.exit(0)
+
+
 class DotSubstrateCall:
     def __init__(self, cli_name, call_module, call_params, seed):
         self.call_module = call_module
@@ -126,13 +172,15 @@ class DotSubstrateCall:
     def __call__(self, func):
         self.logger.info("execute %s function." % func.__name__)
         print(self.call_module, self.call_params, self.seed)
-        print(f"""
-{float(self.call_params['value'])}
-(
-    call_module="{self.call_module}",
-    call_function="{func.__name__}",
-    call_params={self.call_params}
-)""")
+
+        if func.__name__ == "bond":
+            checkAccount(ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'],
+                         logger=self.logger)
+
+        try:
+            self.call_params['value'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
+        except KeyError:
+            pass
 
         call = activeConfig.activeSubstrate.compose_call(
             call_module=f"{self.call_module}",
