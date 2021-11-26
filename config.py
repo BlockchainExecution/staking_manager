@@ -55,18 +55,25 @@ binanceValidator = ["114SUbKCXjmb9czpWTtS3JANSmNRwVa4mmsMrWYpRG1kDH5"]
 class ProductionConfig:
     activeSubstrate = substratePolkadot()
     activeValidator = binanceValidator
+    ss58_format = 0
     coinDecimalPlaces = 10 ** 10
+    coinDecimalPlacesLength = 10
     coinName = "DOT"
+    # Nominating currently requires a minimum of 120 DOT staked funds on Polkadot
     stakeMinimumAmount = 120
+    # On the Polkadot network, an address is only active when it holds a minimum amount, currently set at 1 DOT
     existentialDeposit = 1
 
 
 class TestingConfig:
     activeSubstrate = substrateWestend()
     activeValidator = westendValidator
+    ss58_format = 42
     coinDecimalPlaces = 10 ** 12
+    coinDecimalPlacesLength = 12
     coinName = "WND"
     stakeMinimumAmount = 1
+    existentialDeposit = 1
 
 
-activeConfig = TestingConfig
+activeConfig = ProductionConfig

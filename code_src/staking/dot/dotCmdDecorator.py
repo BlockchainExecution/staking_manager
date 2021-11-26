@@ -1,7 +1,8 @@
 import json
 import sys
 from bip39 import bip39_validate
-from substrateinterface import Keypair
+# TODO: can you confirm the below github for the substrateinterface library?
+from substrateinterface import Keypair # github: https://github.com/polkascan/py-substrate-interface
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
@@ -11,13 +12,30 @@ def dotCreateKeyPair(logger, mnemonic):
     invalidCharacters = "[@_!#$%^&*()<>?/|}{~:]0123456789"
 
     try:
+        # Keypair ~ https://github.com/polkascan/py-substrate-interface#keypair-creation-and-signing
+        # If a mnemonic is not passed in, the default in the above library will be used
+        # however, we will enforce that "something" is passed in to avoid the default (len 10 is arbitrary)
+        # more thorough check from line 37
+        if (len(mnemonic) < 10):
+            logger.critical("A bad mnemonic as been passed to create the keypair")
+            return False
         key = Keypair.create_from_mnemonic(mnemonic)
-        logger.info(f"""create key pair
 
+        # verify that the key generated signs things correctly...
+        testSignature = key.sign("This is a test message 2293")
+        if key.verify("This is a test message 2293", testSignature):
+            logger.info(f"""create key pair\n\n
     {key}
-""")
-        return key
+     \n\n""")
+            return key
+        else:
+            # if there's an error in using the key to sign, exit immediatly
+            logger.critical("KEY INCORRECTLY GENERATED. DO NOT USE.")
+            return False
+
     except ValueError:
+        # more thorough check for the mnemonic below
+
         # split mnemonic by space into words
         splitMnemonic = mnemonic.split(" ")
 
