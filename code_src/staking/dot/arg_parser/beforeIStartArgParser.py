@@ -14,6 +14,7 @@ def beforeIStartArgParser(parent_parser):
         userGuide = """Polkadot staking notes
         
     - Nominating currently requires a minimum of 120 DOT staked funds on Polkadot.
-    - On the Polkadot network, an address is only active when it holds a minimum amount, currently set at 1 DOT.            
+    - On the Polkadot network, an address is only active when it holds a minimum amount, currently set at 1 DOT.
+        - If an account drops below the ED, the account is reaped (“deactivated”) and any remaining funds are destroyed.            
         """
         myLogger("Guide").info(userGuide)

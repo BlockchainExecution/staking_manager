@@ -11,26 +11,25 @@ from Logger import myLogger
 def dotCreateKeyPair(logger, mnemonic):
     invalidCharacters = "[@_!#$%^&*()<>?/|}{~:]0123456789"
 
-    try:
-        # Keypair ~ https://github.com/polkascan/py-substrate-interface#keypair-creation-and-signing
-        # If a mnemonic is not passed in, the default in the above library will be used
-        # however, we will enforce that "something" is passed in to avoid the default (len 10 is arbitrary)
-        # more thorough check from line 37
-        if (len(mnemonic) < 10):
+    # If a mnemonic is not passed in, the default in the above library will be used
+    # however, we will enforce that "something" is passed in to avoid the default (len 10 is arbitrary)
+    if (len(mnemonic) < 10):
             logger.critical("A bad mnemonic as been passed to create the keypair")
             return False
-        key = Keypair.create_from_mnemonic(mnemonic)
 
-        # verify that the key generated signs things correctly...
-        testSignature = key.sign("This is a test message 2293")
-        if key.verify("This is a test message 2293", testSignature):
-            logger.info(f"""create key pair\n\n
+    try:
+        # Keypair ~ https://github.com/polkascan/py-substrate-interface#keypair-creation-and-signing
+        key = Keypair.create_from_mnemonic(mnemonic=mnemonic, ss58_format=activeConfig.ss58_format)
+        logger.info(f"""create key pair\n\n
     {key}
      \n\n""")
+
+        # do a quick verification that the key signs normally
+        if key.verify("This is a test message", key.sign("This is a test message")):
             return key
         else:
-            # if there's an error in using the key to sign, exit immediatly
-            logger.critical("KEY INCORRECTLY GENERATED. DO NOT USE.")
+            # if the key verification fails, exit immediatly
+            logger.critical("\nDO NOT USE KEY. KEY INCORRECTLY GENERATED.\n")
             return False
 
     except ValueError:
@@ -133,6 +132,52 @@ class DotAccountCall:
             pass
 
 
+def checkAccount(ss58_address, tokenNumber, logger):
+    # before we bond any coins we need to check account balance for two main things :
+    #   1 - minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
+    #   2 - active address (Existential Deposit) witch is 1 DOT :
+    #       - NB : If an account drops below the Existential Deposit, the account is reaped (“deactivated”)
+    #           and any remaining funds are destroyed.
+    # so to protect user that use the script and don't know some basics we need to force check value.
+
+    # query balance info for an account
+    accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
+                                                            params=[ss58_address]).value
+
+    # we only need free and reserved information from the balance info
+    free, reserved = accountBalanceInfo['data']['free'], accountBalanceInfo['data']['reserved']
+
+    # we need to calculate account balance vs minimum needed
+    totalAccountBalance = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
+    minimumTotalNeeded = activeConfig.stakeMinimumAmount + activeConfig.existentialDeposit
+
+    # check requirements
+
+    # check decimal writing
+    lenNumberAfterDecimalPoint = len(str(tokenNumber).split(".")[1])
+    if lenNumberAfterDecimalPoint > activeConfig.coinDecimalPlacesLength:
+        logger.warning(
+            f"wrong token value token take max {activeConfig.coinDecimalPlacesLength} number after decimal point")
+        sys.exit(0)
+
+    # we need always to reserve existentialDeposit
+    if totalAccountBalance < minimumTotalNeeded or totalAccountBalance < tokenNumber + activeConfig.existentialDeposit:
+        logger.warning(
+            f"low balance\n"
+            f"actual balance is : {totalAccountBalance} {activeConfig.coinName}\n"
+            f"requested amount : {tokenNumber} {activeConfig.coinName}\n"
+            f"why this happen your account need to have a minimum of {activeConfig.existentialDeposit} "
+            f"{activeConfig.coinName} plus the requested amount wish is not the case "
+            f"{activeConfig.existentialDeposit} + {tokenNumber} != {totalAccountBalance}")
+        sys.exit(0)
+
+    # account has minimum requirements
+    # check for token number vs account balance
+    if tokenNumber < activeConfig.stakeMinimumAmount:
+        logger.warning(f"staking minimum amount is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}")
+        sys.exit(0)
+
+
 class DotSubstrateCall:
     def __init__(self, cli_name, call_module, call_params, seed):
         self.call_module = call_module
@@ -144,13 +189,15 @@ class DotSubstrateCall:
     def __call__(self, func):
         self.logger.info("execute %s function." % func.__name__)
         print(self.call_module, self.call_params, self.seed)
-        print(f"""
-{float(self.call_params['value'])}
-(
-    call_module="{self.call_module}",
-    call_function="{func.__name__}",
-    call_params={self.call_params}
-)""")
+
+        if func.__name__ == "bond":
+            checkAccount(ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'],
+                         logger=self.logger)
+
+        try:
+            self.call_params['value'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
+        except KeyError:
+            pass
 
         call = activeConfig.activeSubstrate.compose_call(
             call_module=f"{self.call_module}",
