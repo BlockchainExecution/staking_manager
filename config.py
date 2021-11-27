@@ -82,4 +82,4 @@ class TestingConfig:
     existentialDeposit = 1
 
 
-activeConfig = ProductionConfig
+activeConfig = TestingConfig
