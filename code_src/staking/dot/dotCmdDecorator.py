@@ -132,26 +132,25 @@ class DotAccountCall:
             pass
 
 
-def checkAccount(ss58_address, tokenNumber, logger):
+def validateAccountInfoBeforeBonding(ss58_address, tokenNumber, logger):
     # before we bond any coins we need to check account balance for two main things :
     #   1 - minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
     #   2 - active address (Existential Deposit) witch is 1 DOT :
-    #       - NB : If an account drops below the Existential Deposit, the account is reaped (“deactivated”)
-    #           and any remaining funds are destroyed.
+    #       - NB : !! If an account drops below the Existential Deposit, the account is reaped (“deactivated”)
+    #           and any remaining funds are destroyed. !!
+    # https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-
     # so to protect user that use the script and don't know some basics we need to force check value.
+    printTmp("I'm in validateAccountInfoBeforeBonding A")
 
-    # query balance info for an account
-    accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
-                                                            params=[ss58_address]).value
+    # check the number of tokens to bond is above protocol min
+    validateBondSize(tokenNumber)
+    
+    # if the bonding qty is above the protocol min,
+    # check that the account balance is sufficient to bond the tokenNumber
+    # will sys.exit if balance is insufficient
+    validateAcctBalanceForBonding(ss58_address, tokenNumber, logger)
 
-    # we only need free and reserved information from the balance info
-    free, reserved = accountBalanceInfo['data']['free'], accountBalanceInfo['data']['reserved']
-
-    # we need to calculate account balance vs minimum needed
-    totalAccountBalance = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
-    minimumTotalNeeded = activeConfig.stakeMinimumAmount + activeConfig.existentialDeposit
-
-    # check requirements
+    # TODO: check that controller address matches mnc
 
     # check decimal writing
     lenNumberAfterDecimalPoint = len(str(tokenNumber).split(".")[1])
@@ -160,22 +159,59 @@ def checkAccount(ss58_address, tokenNumber, logger):
             f"wrong token value token take max {activeConfig.coinDecimalPlacesLength} number after decimal point")
         sys.exit(0)
 
+
+def validateBondSize(tokenNumber):
+    # TODO: the minimum to stake and the minimum to bond are not the same I assume, which should we be using?
+    # TODO: confirm that the decimals of tokenNumber and stakeMin are directly comparable?
+    if(tokenNumber < activeConfig.stakeMinimumAmount):
+        logger.critical('''You are trying to bond {tokenNumber},\n
+            but the minimum required for bonding is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}\n"''')
+
+
+def validateAcctBalanceForBonding(ss58_address, tokenNumber, logger):
+
+    # we need to calculate account balance vs minimum needed
+
+    # check requirements
+    totalAccountBalance = AccountBalanceForBonding.getAccountBalance(ss58_address)
+    printTmp(totalAccountBalance)
+
     # we need always to reserve existentialDeposit
-    if totalAccountBalance < minimumTotalNeeded or totalAccountBalance < tokenNumber + activeConfig.existentialDeposit:
+
+    if totalAccountBalance < (tokenNumber + activeConfig.existentialDeposit):    
         logger.warning(
-            f"low balance\n"
-            f"actual balance is : {totalAccountBalance} {activeConfig.coinName}\n"
-            f"requested amount : {tokenNumber} {activeConfig.coinName}\n"
-            f"why this happen your account need to have a minimum of {activeConfig.existentialDeposit} "
-            f"{activeConfig.coinName} plus the requested amount wish is not the case "
-            f"{activeConfig.existentialDeposit} + {tokenNumber} != {totalAccountBalance}")
+            f"Low balance\n"
+            f"Actual balance is : {totalAccountBalance} {activeConfig.coinName}\n"
+            f"Requested amount : {tokenNumber} {activeConfig.coinName}\n"
+            f"Your account needs to have a minimum of {activeConfig.existentialDeposit} "
+            f"{activeConfig.coinName} plus the requested amount and it does not.\nYou need at least: "
+            f"{activeConfig.existentialDeposit} + {tokenNumber} = {activeConfig.existentialDeposit + tokenNumber}, "
+            f"but the account balance is only {totalAccountBalance}")
         sys.exit(0)
 
-    # account has minimum requirements
-    # check for token number vs account balance
-    if tokenNumber < activeConfig.stakeMinimumAmount:
-        logger.warning(f"staking minimum amount is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}")
-        sys.exit(0)
+# TODO:
+# * rename AccountBalance class; better inheretence/abstraction
+class AccountBalanceForBonding:
+    def __init__(self):
+        #self.ss58_address = ss58_address
+        return
+
+    @staticmethod
+    def getAccountBalance(ss58_address):
+        # query balance info for an account
+        accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
+                                                                params=[ss58_address]).value
+
+        # we only need free and reserved information from the balance info
+        # free and reserved explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
+        # TODO: decide what the account balance calculation "should" be, i.e. free + reserved or only free?
+        free,reserved = accountBalanceInfo['data']['free'], accountBalanceInfo['data']['reserved']
+        printTmp(free)
+
+        # free and reserved are given as uint quantity; convert to float
+        totalAccountBalance = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
+
+        return totalAccountBalance
 
 
 class DotSubstrateCall:
@@ -190,8 +226,9 @@ class DotSubstrateCall:
         self.logger.info("execute %s function." % func.__name__)
         print(self.call_module, self.call_params, self.seed)
 
+        printTmp("I'm in DotSubstrateCall __call__")
         if func.__name__ == "bond":
-            checkAccount(ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'],
+            validateAccountInfoBeforeBonding(ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'],
                          logger=self.logger)
 
         try:
@@ -262,3 +299,7 @@ class DotValidatorCall:
 
     def __exit__(self):
         pass
+
+# helper print method for checking the code, can delete anytime
+def printTmp(printMe):
+    print("\n\n****************\n %s \n****************\n\n" % printMe)
