@@ -1,4 +1,4 @@
-from code_src.staking.dot.dotCmdDecorator import DotSubstrateCall
+from code_src.staking.dot.fxn_decorator_implementations.substrateCallManager import DotSubstrateCall
 from common import MyHelpFormatter
 from code_src.staking.dot.dotArgparserUtil import actionSeed, actionNumberOfTokens, actionControllerAddress, \
     actionRewardsDestination, \
@@ -153,6 +153,7 @@ def bounderArgParser(parent_parser):
                 subHelp="Remove any unlocked chunks from the `unlocking` queue. This essentially frees up that balance to be used by the stash account to do whatever it wants.",
                 epilog=exampleWithdrawUnBonded, reqArgs=[actionSeed(), actionNumberOfTokens()],
                 optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
+    # TODO: this fxn needs to be renamed withdrawunbounded -> withdrawunbonded (i.e. remove the 'u' in "bounded")
     def withdrawunbounded(args):
         @DotSubstrateCall(cli_name="Bounder", call_module="Staking",
                           call_params={'value': args.number_of_tokens}, seed=args.seed)

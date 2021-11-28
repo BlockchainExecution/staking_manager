@@ -34,21 +34,20 @@ def subcommand(parent, subHelp="", epilog="", reqArgs=None, optArgs=None):
 
 def actionSeed():
     return argument('-s', '--seed',
-                    help='mnemonic phrase is a group words, often 12 or more, created when a new wallet is made.''to store your cryptocurrency.',
+                    help='mnemonic phrase is a group words, often 12 or more,\ncreated when a new wallet is made.\n''to store your cryptocurrency.\n\n',
                     required=True)
 
 
 def actionControllerAddress():
     return argument('-ca', '--controller_address',
-                    help="""
-An address you would like to bond to the stash account. Stash and Controller can be the same address but it is not recommended since it defeats the security of the two-account staking model.!""",
+                    help="""An address you would like to bond to the stash account.\nStash and Controller can be the same address but it is not recommended\nsince it defeats the security of the two-account staking model.!\n\n""",
                     required=True, type=str
                     )
 
 
 def actionNumberOfTokens():
     return argument('-nt', '--number_of_tokens',
-                    help='The number of DOT you would like to stake to the network.',
+                    help='The number of DOT you would like to stake to the network.\n',
                     required=True,
                     type=float
                     )
@@ -60,8 +59,8 @@ def actionRewardsDestination():
 Choices supports the following:
   staked    - Pay into the stash account, increasing the amount at stake accordingly.
   stash       - Pay into the stash account, not increasing the amount at stake.
-  account     - Pay into a custom account, like so: Account DMTHrNcmA8QbqRS4rBq8LXn8ipyczFoNMb1X4cY2WD9tdBX.
-  controller  - Pay into the controller account.
+  account     - Pay into a custom account, for example: Account DMTHrNcmA8QbqRS4rBq8LXn8ipyczFoNMb1X4cY2WD9tdBX.
+  controller  - Pay into the controller account.\n
 """,
                     default="Staked",
                     choices=["Staked", "Stash", "Account", "Controller"],
@@ -73,7 +72,7 @@ Choices supports the following:
 def actionValidatorAddress():
     return argument('-va', '--validator_address',
                     help="""
-Address of a Polkadot validators (where to stake coins).It can be one or more address. By default binance validator address will be chosen.
+Address of a Polkadot validators (where to stake coins). It can be one or more address.\nBy default binance validator address will be chosen.\n
                                     """,
                     default=activeConfig.activeValidator,
                     nargs="*",

@@ -1,9 +1,15 @@
-from code_src.staking.dot.dotCmdDecorator import DotAccountCall
+from code_src.staking.dot.fxn_decorator_implementations.accountManager import DotAccountCall
 from common import MyHelpFormatter
 from examples import exampleCreateMnemonic, exampleCreateAccount, exampleAccountInfos, exampleCreateKeypair, \
     exampleStaker
 from code_src.staking.dot.dotArgparserUtil import actionHelp, subcommand, actionSeed, actionControllerAddress
 
+"""
+TODO:
+* This file and all references (i.e. cli cmds) need to be renamed accountingArgParser -> accountArgParser
+* "accounting" is kind of incorrect english and is therefore confusing to the user, "account" is correct
+
+"""
 
 def accountingArgParser(parent_parser):
     # bounder parent parser

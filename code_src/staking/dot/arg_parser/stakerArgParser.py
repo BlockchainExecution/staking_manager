@@ -1,7 +1,7 @@
 from code_src.staking.dot.dotArgparserUtil import actionSeed, actionNumberOfTokens, actionControllerAddress, \
     actionRewardsDestination, \
     actionValidatorAddress, actionHelp, subcommand
-from code_src.staking.dot.dotCmdDecorator import DotSubstrateCall
+from code_src.staking.dot.fxn_decorator_implementations.substrateCallManager import DotSubstrateCall
 
 from examples import exampleStaker
 
