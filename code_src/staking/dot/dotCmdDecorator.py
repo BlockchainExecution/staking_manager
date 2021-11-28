@@ -63,7 +63,11 @@ def dotCreateKeyPair(logger, mnemonic):
                 logger.critical("Please check for messing strings.")
                 return False
 
-
+"""
+Generic function for executing account related calls for DOT
+The following calls are made to this class:
+* All calls in accountingArgParser.py (mnemonic, keypair, info, create)
+"""
 class DotAccountCall:
     def __init__(self, mnemonic="", ss58_address=""):
         self.cli_name = "Accounting"
@@ -132,7 +136,7 @@ class DotAccountCall:
             pass
 
 
-def validateAccountInfoBeforeBonding(ss58_address, tokenNumber, logger):
+def validateAccountDataBeforeBonding(ss58_address, tokenNumber, logger):
     # before we bond any coins we need to check account balance for two main things :
     #   1 - minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
     #   2 - active address (Existential Deposit) witch is 1 DOT :
@@ -140,10 +144,10 @@ def validateAccountInfoBeforeBonding(ss58_address, tokenNumber, logger):
     #           and any remaining funds are destroyed. !!
     # https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-
     # so to protect user that use the script and don't know some basics we need to force check value.
-    printTmp("I'm in validateAccountInfoBeforeBonding A")
+    printTmp("I'm in validateAccountDataBeforeBonding A")
 
     # check the number of tokens to bond is above protocol min
-    validateBondSize(tokenNumber)
+    validateBondSize(logger, tokenNumber)
     
     # if the bonding qty is above the protocol min,
     # check that the account balance is sufficient to bond the tokenNumber
@@ -160,13 +164,12 @@ def validateAccountInfoBeforeBonding(ss58_address, tokenNumber, logger):
         sys.exit(0)
 
 
-def validateBondSize(tokenNumber):
+def validateBondSize(logger, tokenNumber):
     # TODO: the minimum to stake and the minimum to bond are not the same I assume, which should we be using?
     # TODO: confirm that the decimals of tokenNumber and stakeMin are directly comparable?
     if(tokenNumber < activeConfig.stakeMinimumAmount):
-        logger.critical('''You are trying to bond {tokenNumber},\n
-            but the minimum required for bonding is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}\n"''')
-
+        logger.warning(f"You are trying to bond {tokenNumber}, but the minimum required for bonding is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}\n")
+        sys.exit(0)
 
 def validateAcctBalanceForBonding(ss58_address, tokenNumber, logger):
 
@@ -213,7 +216,14 @@ class AccountBalanceForBonding:
 
         return totalAccountBalance
 
+"""
+Generic function for executing calls to DOT network
+The following calls are made to this class:
+* All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
+* Some calls in nominatorArgParser.py (nominate, unnominate)
+* 1 call in stakerArgParser (staker)
 
+"""
 class DotSubstrateCall:
     def __init__(self, cli_name, call_module, call_params, seed):
         self.call_module = call_module
@@ -226,9 +236,9 @@ class DotSubstrateCall:
         self.logger.info("execute %s function." % func.__name__)
         print(self.call_module, self.call_params, self.seed)
 
-        printTmp("I'm in DotSubstrateCall __call__")
+        printTmp("I'm in DotSubstrateCall __call__ with the function: %s" %func.__name__)
         if func.__name__ == "bond":
-            validateAccountInfoBeforeBonding(ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'],
+            validateAccountDataBeforeBonding(ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'],
                          logger=self.logger)
 
         try:
@@ -290,7 +300,14 @@ class DotSubstrateCall:
         sys.exit(0)
 
 
-# TODO
+
+"""
+TODO -
+
+Generic function for executing calls to DOT network
+The following calls are made to this class:
+* All calls in validator.py (validator)
+"""
 class DotValidatorCall:
     def __init__(self):
         self.cli_name = "Validator"
