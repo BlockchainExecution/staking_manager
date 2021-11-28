@@ -7,11 +7,19 @@ from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
 
+"""
+
+This file can still be used for adding new, unorganized code before it gets refactored into
+a more organized architecture/file system
+
+"""
+
+
 
 """
 TODO -
 
-Generic function for executing calls to DOT network
+Generic class for executing validator calls to DOT network
 The following calls are made to this class:
 * All calls in validator.py (validator)
 """

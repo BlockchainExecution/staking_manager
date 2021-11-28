@@ -89,7 +89,7 @@ class AccountBalanceForBonding:
         return totalAccountBalance
 
 """
-Generic function for executing calls to DOT network
+Generic class for executing calls to DOT network
 The following calls are made to this class:
 * All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
 * Some calls in nominatorArgParser.py (nominate, unnominate)
