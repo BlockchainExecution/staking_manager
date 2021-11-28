@@ -1,5 +1,6 @@
 # StakingManager
 Python based CLI tool for staking (nominating) in Polkadot
+<br />⚠️ Not production ready ⚠️
 
 ## Instructions:
 run `python StakingManager.py dot -h`
