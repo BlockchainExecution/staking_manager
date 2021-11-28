@@ -14,7 +14,7 @@ from Logger import myLogger
 Function creates a keypair for dot given a mnemonic and returns it (or exits the system if it fails).
 It's currently kept outside the DotAccountCall as an auxilary function in order to keep the pre-defined
 function set in DotAccountCall (i.e. createMnemonic, getAccountInfos, etc.)
-Function is (currently) called *only* from DotAccountCall
+Function is called from DotAccountCall and DotSubstrateCall
 """
 def dotCreateKeyPair(logger, mnemonic):
     invalidCharacters = "[@_!#$%^&*()<>?/|}{~:]0123456789"

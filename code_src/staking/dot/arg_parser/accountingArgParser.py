@@ -4,6 +4,12 @@ from examples import exampleCreateMnemonic, exampleCreateAccount, exampleAccount
     exampleStaker
 from code_src.staking.dot.dotArgparserUtil import actionHelp, subcommand, actionSeed, actionControllerAddress
 
+"""
+TODO:
+* This file and all references (i.e. cli cmds) need to be renamed accountingArgParser -> accountArgParser
+* "accounting" is kind of incorrect english and is therefore confusing to the user, "account" is correct
+
+"""
 
 def accountingArgParser(parent_parser):
     # bounder parent parser

@@ -7,6 +7,10 @@ from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
 from code_src.staking.dot.fxn_decorator_implementations.substrateCallManagerUtils import *
+# TODO: 
+# consider adding dotCreateKeyPair() to DotAccountCall so that this file only has to import
+# accountManager and not a utils file for accountManager... importing another utils file isn't very clean
+from code_src.staking.dot.fxn_decorator_implementations.accountManagerUtils import *
 
 
 """
@@ -15,10 +19,6 @@ The following calls are made to this class:
 * All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
 * Some calls in nominatorArgParser.py (nominate, unnominate)
 * 1 call in stakerArgParser (staker)
-
-TODO:
-* rename this file as it's not specific to bonding
-
 """
 class DotSubstrateCall:
     def __init__(self, cli_name, call_module, call_params, seed):
@@ -56,6 +56,7 @@ class DotSubstrateCall:
         """
 
         this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
+        
         extrinsic = activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_keypair)
         """None
         {'substrate': < substrateinterface.base.SubstrateInterfaceobject at 0x000001F7C2F73F70 >, 

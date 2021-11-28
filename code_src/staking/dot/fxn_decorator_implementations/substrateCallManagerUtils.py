@@ -7,6 +7,13 @@ from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
 
+"""
+TODO:
+* Create class to hold the validation functions
+* Better integration with accountManager
+
+"""
+
 def validateAccountDataBeforeBonding(ss58_address, tokenNumber, logger):
     # before we bond any coins we need to check account balance for two main things :
     #   1 - minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
