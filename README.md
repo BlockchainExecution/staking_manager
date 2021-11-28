@@ -1,7 +1,7 @@
 # StakingManager
 Python based CLI tool for staking (nominating) in Polkadot
 
-Instructions:
+### Instructions:
 run `python StakingManager.py dot -h`
     - NOTE: because only polkadot is supported, you must give `dot` as the first argument.
     In the future, when we support additional networks, there will be other options to `dot`
