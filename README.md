@@ -17,7 +17,9 @@ Architecture:
 * Most "unique" logic is in dotCmdDecorator
 * config.py specifies the network (see bottom of file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
-    - SubstrateInterface (py): https://github.com/polkascan/py-substrate-interface 
+    - SubstrateInterface (py): https://github.com/polkascan/py-substrate-interface
+    - https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
+
 
 Immediate TODOs:
 * Improved testing
