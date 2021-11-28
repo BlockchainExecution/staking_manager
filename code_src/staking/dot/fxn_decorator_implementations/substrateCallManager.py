@@ -6,7 +6,7 @@ from substrateinterface import Keypair # github: https://github.com/polkascan/py
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
-from code_src.staking.dot.fxn_decorator_implementations.bondManagerUtils import *
+from code_src.staking.dot.fxn_decorator_implementations.substrateCallManagerUtils import *
 
 
 """
@@ -15,6 +15,9 @@ The following calls are made to this class:
 * All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
 * Some calls in nominatorArgParser.py (nominate, unnominate)
 * 1 call in stakerArgParser (staker)
+
+TODO:
+* rename this file as it's not specific to bonding
 
 """
 class DotSubstrateCall:
