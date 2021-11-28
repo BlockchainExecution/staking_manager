@@ -1,4 +1,4 @@
-from code_src.staking.dot.dotCmdDecorator import DotSubstrateCall
+from code_src.staking.dot.fxn_decorator_implementations.bondManager import DotSubstrateCall
 
 from common import MyHelpFormatter
 from code_src.staking.dot.dotArgparserUtil import actionSeed, actionValidatorAddress, actionHelp, subcommand, actionTest

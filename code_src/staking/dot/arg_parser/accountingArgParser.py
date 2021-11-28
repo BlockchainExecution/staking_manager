@@ -1,4 +1,4 @@
-from code_src.staking.dot.dotCmdDecorator import DotAccountCall
+from code_src.staking.dot.fxn_decorator_implementations.accountManager import DotAccountCall
 from common import MyHelpFormatter
 from examples import exampleCreateMnemonic, exampleCreateAccount, exampleAccountInfos, exampleCreateKeypair, \
     exampleStaker
