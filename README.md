@@ -16,9 +16,9 @@ Features:
 	- https://wiki.polkadot.network/docs/maintain-errors
 
 Architecture:
-* StakingManager.py is the main file
-* Most "unique" logic is in dotCmdDecorator
-* config.py specifies the network (see bottom of file), right now only Polkadot mainnet and Westend are really functional
+* StakingManager.py is the cli executed file
+* Most "unique" logic is in fxn_decorator_implementations folder
+* config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
     - SubstrateInterface (py): https://github.com/polkascan/py-substrate-interface
     - https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
