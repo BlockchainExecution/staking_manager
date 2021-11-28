@@ -1,2 +1,30 @@
 # StakingManager
-Easy-to-get-started, open-sourced framework for managing investments in many staking protocols
+Python based CLI tool for staking (nominating) in Polkadot
+
+Instructions:
+* run python StakingManager.py dot -h
+    - NOTE: because only polkadot is supported, you must give `dot` as the first argument.
+    In the future, when we support additional networks, there will be other options to `dot`
+
+
+Features:
+* Pretty intuitive ArgParser for (see examples.py):
+	- Creating a mnemonic, keypair, getting acct info
+	- Bonding, unbonding, rebonding, withdrawing
+	- Nominating (Staking), setting staker requirements
+* Validations and error handling for staking
+	- Keep-alive checks (existential deposit)
+	- https://wiki.polkadot.network/docs/maintain-errors
+
+Architecture:
+* StakingManager.py is the main file
+* Most "unique" logic is in dotCmdDecorator
+* config.py specifies the network (see bottom of file), right now only Polkadot mainnet and Westend are really functional
+* Under the hood:
+    - SubstrateInterface (py): https://github.com/polkascan/py-substrate-interface 
+
+Immediate TODOs:
+* Improved testing
+* Improved validations and error handling, e.g. to avoid existential deposit
+* Adding new substrate based chains to stake on
+
