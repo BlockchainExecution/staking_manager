@@ -16,13 +16,22 @@ run `python StakingManager.py dot -h`
 	- Keep-alive checks (existential deposit)
 	- https://wiki.polkadot.network/docs/maintain-errors
 
-### Architecture:
+### Codebase :
 * StakingManager.py is the cli executed file
 * Most "unique" logic is in fxn_decorator_implementations folder
 * config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
     - SubstrateInterface (py): https://github.com/polkascan/py-substrate-interface
     - https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
+
+### Architecture:
+* _
+
+### Coding Patterns:
+* If a filename has a corresponding Utils file, one should not ever need to import the Utils file except in its pair.
+    - For example, accountManager.py should import accountManagerUtils.py, but no other files should import accountManagerUtils.py.
+Instead, all other files should only ever have to import accountManager.py.
+
 
 #### Immediate TODOs:
 * Improved testing
