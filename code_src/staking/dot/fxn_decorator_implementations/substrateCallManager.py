@@ -32,10 +32,9 @@ class DotSubstrateCall:
         self.logger.info("execute %s function." % func.__name__)
         print(self.call_module, self.call_params, self.seed)
 
-        printTmp("I'm in DotSubstrateCall __call__ with the function: %s" %func.__name__)
         if func.__name__ == "bond":
-            validateAccountDataBeforeBonding(ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'],
-                         logger=self.logger)
+            bondValidator = bondingValidator(logger=self.logger, ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'])
+            bondValidator.validateAccountDataBeforeBonding()
 
         try:
             self.call_params['value'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
