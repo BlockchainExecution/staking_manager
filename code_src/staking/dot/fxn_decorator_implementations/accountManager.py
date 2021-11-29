@@ -69,7 +69,7 @@ class AccountBalanceForBonding:
         self.ss58_address = ss58_address
 
         # takes AccountManager as initialization arguement
-        if(!isinstance(account, AccountManager())):
+        if(isinstance(account, AccountManager()) == False):
             logger.warning("AccountManager type not passed to initialize AccountBalanceForBonding. Failing.")
             return False
 
@@ -124,16 +124,21 @@ class KeyPairManager:
         self.mnemonic = mnemonic
         # what to do if no mnemonic is passed? Adapt fxn signature.
 
-    def createKeyPair(self):
-        pass:
+    def testfxn1(self):
+        return True
+    # def createKeyPair(self):
+    #     pass:
 
-"""
-Function creates a keypair for dot given a mnemonic and returns it (or exits the system if it fails).
-It's currently kept outside the DotAccountCall as an auxilary function in order to keep the pre-defined
-function set in DotAccountCall (i.e. createMnemonic, getAccountInfos, etc.)
-Function is called from DotAccountCall and DotSubstrateCall
-"""
+    def testfxn2(self):
+        return True
+
     def dotCreateKeyPair(self):
+        """
+        Function creates a keypair for dot given a mnemonic and returns it (or exits the system if it fails).
+        It's currently kept outside the DotAccountCall as an auxilary function in order to keep the pre-defined
+        function set in DotAccountCall (i.e. createMnemonic, getAccountInfos, etc.)
+        Function is called from DotAccountCall and DotSubstrateCall
+        """
         invalidCharacters = "[@_!#$%^&*()<>?/|}{~:]0123456789"
 
         # If a mnemonic is not passed in, the default in the above library will be used
@@ -245,7 +250,7 @@ class DotAccountCall:
     #         self.logger.error(f"{e}")
 
     def createAccount(self) -> json:
-        return = AccountManager().createAccount()
+        return AccountManager().createAccount()
         # createAccountMnemonic = self.createMnemonic()
         # createAccountKeyPair = dotCreateKeyPair(self.logger, createAccountMnemonic)
         # # check if mnemonic is created if this pass keypair will pass without errors

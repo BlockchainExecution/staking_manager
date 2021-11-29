@@ -27,10 +27,13 @@ run `python StakingManager.py dot -h`
 ### Architecture:
 * TODO
 
-### Coding Patterns:
+### Coding Patterns (Ideals):
+* SOLID - https://gist.github.com/dmmeteo/f630fa04c7a79d3c132b9e9e5d037bfd
 * If a filename has a corresponding Utils file, one should not ever need to import the Utils file except in its pair.
     - For example, accountManager.py should import accountManagerUtils.py, but no other files should import accountManagerUtils.py.
 Instead, all other files should only ever have to import accountManager.py.
+* Pass "generic" arguements first in a function and more unique arguements subsequently
+    - For example, in `def __init__(self, logger, accountManager)`, `self` and `logic` generic and therefore passed before `accountManager`
 
 
 #### Immediate TODOs:
