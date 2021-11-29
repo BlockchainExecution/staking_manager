@@ -81,3 +81,30 @@ class DotAccountCall:
         else:
             pass
 
+
+# TODO:
+# * rename AccountBalance class; better inheretence/abstraction
+# * use accountManager
+# * called in substrateCallManagerUtils.py
+class AccountBalanceForBonding:
+    def __init__(self):
+        #self.ss58_address = ss58_address
+        return
+
+    @staticmethod
+    def getAccountBalance(ss58_address):
+        # query balance info for an account
+        accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
+                                                                params=[ss58_address]).value
+
+        # we only need free and reserved information from the balance info
+        # free and reserved explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
+        # TODO: decide what the account balance calculation "should" be, i.e. free + reserved or only free?
+        free,reserved = accountBalanceInfo['data']['free'], accountBalanceInfo['data']['reserved']
+        printTmp(free)
+
+        # free and reserved are given as uint quantity; convert to float
+        totalAccountBalance = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
+
+        return totalAccountBalance
+
