@@ -38,7 +38,7 @@ def accountingArgParser(parent_parser):
             pass
 
     # account_infos
-    @subcommand(parent=accountingDotSubParser, subHelp="get an account info.", epilog=exampleAccountInfos,
+    @subcommand(parent=accountingDotSubParser, subHelp="get the info of an account (i.e. an address)", epilog=exampleAccountInfos,
                 reqArgs=[actionControllerAddress()],
                 optArgs=[actionHelp()])
     def info(args):
