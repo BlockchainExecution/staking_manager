@@ -21,7 +21,7 @@ class AccountImplementation:
     directly refer to any code in accountImplementationUtils.py
 
     Therefore, some of the functions in AccountImplementation are "redundant", e.g. 
-    createMnemonic just calls MnemonicManager in accountImplementationUtils.py
+    createMnemonic just calls MnemonicImplementation in accountImplementationUtils.py
     """
     def __init__(self, logger, mnemonic="", ss58_address=""):
         self.mnemonic = mnemonic
@@ -30,10 +30,10 @@ class AccountImplementation:
 
     def createNewAccount(self) -> json:
         # TODO: createAccount is not returning a json, is that a problem?
-        # MnemonicManager is called here instead of self.createMnemonic() because it's better
+        # MnemonicImplementation is called here instead of self.createMnemonic() because it's better
         # for functions in the AccountImplementation class to directly call the implementation classes
-        newMnemonic = MnemonicManager(self.logger).createMnemonic()
-        createAccountKeyPair = KeyPairManager(self.logger, newMnemonic).getAddressFromMnemonic()
+        newMnemonic = MnemonicImplementation(self.logger).createMnemonic()
+        createAccountKeyPair = KeyPairImplementation(self.logger, newMnemonic).getAddressFromMnemonic()
         # check if mnemonic is created if this pass keypair will pass without errors
         if not createAccountKeyPair:
             return False
@@ -45,7 +45,7 @@ class AccountImplementation:
         to create a mnemonic without requiring a function outside accountImplementation.py to
         call a function in accountImplementationUtils.py
         """
-        newMnemonic = MnemonicManager(self.logger).createMnemonic()
+        newMnemonic = MnemonicImplementation(self.logger).createMnemonic()
         return newMnemonic
 
     def getAddressFromMnemonic(self):
@@ -54,7 +54,7 @@ class AccountImplementation:
         to get an address from a mnemonic without requiring a function outside accountImplementation.py
         to call a function in accountImplementationUtils.py
         """
-        address = KeyPairManager(self.logger, self.mnemonic).getAddressFromMnemonic()
+        address = KeyPairImplementation(self.logger, self.mnemonic).getAddressFromMnemonic()
         return address
 
     def getAllAccountInfo(self):
@@ -117,7 +117,7 @@ class AccountBalanceForBonding:
     # TODO:
     # * rename AccountBalance class; better inheretence/abstraction
     # * use accountImplementation
-    # * called in substrateCallManagerUtils.py
+    # * called in substrateCallImplementationUtils.py
     # Why doens't this go in DotAccountCall?
     """
     def __init__(self, logger, ss58_address, account: AccountImplementation):
@@ -144,7 +144,7 @@ class AccountBalanceForBonding:
 
         return totalAccountBalance
 
-class MnemonicManager:
+class MnemonicImplementation:
     """
     Class creates a mnemonic and prints in the log, currently has no other purpose
     * For security reasons, do not store the mnemonics
@@ -171,7 +171,7 @@ class MnemonicManager:
             self.logger.critical(f"error : {e}")
             return False
 
-class KeyPairManager:
+class KeyPairImplementation:
     """
     Class creates a keypair
     """
@@ -248,7 +248,7 @@ class KeyPairManager:
             ### TEST THIS CLASS BEFORE DELETING BELOW ###
 
     # def createMnemonic(self):
-    #     m = MnemonicManager()
+    #     m = MnemonicImplementation()
     #     return m.createMnemonic()
 
     # def getAccountInfos(self, ss58_address):
