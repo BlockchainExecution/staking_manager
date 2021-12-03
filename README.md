@@ -40,5 +40,5 @@ Instead, all other files should only ever have to import accountManager.py.
 * Improved testing
 * Improved validations and error handling, e.g. to avoid existential deposit
 * Adding new substrate based chains to stake on
-* rename code_src/ to src/
+* check TODOs in substrateCallImplementationUtils
 
