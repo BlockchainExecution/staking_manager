@@ -13,14 +13,14 @@ from code_src.staking.dot.fxn_decorator_implementations.substrateCallManagerUtil
 from code_src.staking.dot.fxn_decorator_implementations.accountManagerUtils import *
 
 
-"""
-Generic class for executing calls to DOT network
-The following calls are made to this class:
-* All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
-* Some calls in nominatorArgParser.py (nominate, unnominate)
-* 1 call in stakerArgParser (staker)
-"""
 class DotSubstrateCall:
+    """
+    Generic class for executing calls to DOT network
+    The following calls are made to this class:
+    * All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
+    * Some calls in nominatorArgParser.py (nominate, unnominate)
+    * 1 call in stakerArgParser (staker)
+    """
     def __init__(self, cli_name, call_module, call_params, seed):
         self.call_module = call_module
         self.call_params = call_params
@@ -54,8 +54,10 @@ class DotSubstrateCall:
         :return:
         """
 
-        this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
-        
+        #this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
+        # TODO: should call AccountManager().createAccount() instead to keep everything needed in accountManager.py
+        this_keypair = KeyPairManager(logger=self.logger, mnemonic=self.seed).getAddressFromMnemonic()
+
         extrinsic = activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_keypair)
         """None
         {'substrate': < substrateinterface.base.SubstrateInterfaceobject at 0x000001F7C2F73F70 >, 

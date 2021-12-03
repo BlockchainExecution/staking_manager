@@ -57,8 +57,8 @@ class bondingValidator:
                 f"wrong token value token take max {activeConfig.coinDecimalPlacesLength} number after decimal point")
             sys.exit(0)
 
-# Function checks that the size of the bond is above the minimum defined by the network
-# Minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
+    # Function checks that the size of the bond is above the minimum defined by the network
+    # Minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
     def validateBondSize(self):
         # TODO: the minimum to stake and the minimum to bond are not the same I assume, which should we be using?
         # TODO: confirm that the decimals of tokenNumber and stakeMin are directly comparable?
@@ -66,7 +66,7 @@ class bondingValidator:
             self.logger.warning(f"You are trying to bond {self.tokenNumber}, but the minimum required for bonding is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}\n")
             sys.exit(0)
 
-# Function calculates and compares account balance vs minimum balance needed to stake
+    # Function calculates and compares account balance vs minimum balance needed to stake
     def validateAcctBalanceForBonding(self):
         # validateBoncSize is already called before this function, however it's called again here for redundancy
         # in case validateAccountDataBeforeBonding was ever to change, the scope of this function

@@ -8,26 +8,54 @@ from config import activeConfig
 from Logger import myLogger
 from code_src.staking.dot.fxn_decorator_implementations.accountManagerUtils import *
 
-
-"""
-Class for containing functions related to accounts.
-An "account" is defined as keypair with associated data.
-
-"""
 class AccountManager:
+    """
+    * TODO: rename to AccountImplementation (big refactor)
+
+    AccountManager is a class for containing functions related to accounts.
+    An "account" is defined as keypair with associated data.
+
+    AccountManager also serves as a kind of interface for all functions outside accountManager.py and
+    accountManagerUtils.py to have 1 reference point for 'account' related functions. 
+    Any classes/functions outside accountManager.py and accountManagerUtils.py should not need to 
+    directly refer to any code in accountManagerUtils.py
+
+    Therefore, some of the functions in AccountManager are "redundant", e.g. 
+    createMnemonic just calls MnemonicManager in accountManagerUtils.py
+    """
     def __init__(self, logger, mnemonic="", ss58_address=""):
         self.mnemonic = mnemonic
         self.ss58_address = ss58_address
         self.logger = logger
 
-    def createAccount(self) -> json:
-        m = Mnemonic().createMnemonic()
-        #does this behavior make sense to pass in the mnemonic instead of creating on in dotCreateKeyPair...
-        createAccountKeyPair = KeyPairManager(self.logger, m)
+    def createNewAccount(self) -> json:
+        # TODO: createAccount is not returning a json, is that a problem?
+        # MnemonicManager is called here instead of self.createMnemonic() because it's better
+        # for functions in the AccountManager class to directly call the implementation classes
+        newMnemonic = MnemonicManager(self.logger).createMnemonic()
+        createAccountKeyPair = KeyPairManager(self.logger, newMnemonic).getAddressFromMnemonic()
         # check if mnemonic is created if this pass keypair will pass without errors
         if not createAccountKeyPair:
             return False
         return True
+
+    def createMnemonic(self):
+        """
+        The purpose of this function is to provide a function in AccountManager class
+        to create a mnemonic without requiring a function outside accountManager.py to
+        call a function in accountManagerUtils.py
+        """
+        newMnemonic = MnemonicManager(self.logger).createMnemonic()
+        return newMnemonic
+
+    def getAddressFromMnemonic(self):
+        """
+        The purpose of this function is to provide a function in AccountManager class
+        to get an address from a mnemonic without requiring a function outside accountManager.py
+        to call a function in accountManagerUtils.py
+        """
+        address = KeyPairManager(self.logger, self.mnemonic).getAddressFromMnemonic()
+        return address
 
     def getAllAccountInfo(self):
         try:
@@ -54,23 +82,51 @@ class AccountManager:
 #    def getAccountBalanceForBonding(self):
 #    def getAccountBalance():
 
-"""
-Class is to return balance of bonding - verifications
-TODO: Better explanation
-# TODO:
-# * rename AccountBalance class; better inheretence/abstraction
-# * use accountManager
-# * called in substrateCallManagerUtils.py
-# Why doens't this go in DotAccountCall?
-"""
+class DotAccountCall:
+    """
+    Class for executing account related calls for DOT
+    The following calls are made to this class:
+    * All calls in accountingArgParser.py (mnemonic, keypair, info, create)
+    """
+    def __init__(self, mnemonic="", ss58_address=""):
+        self.cli_name = "Accounting"
+        self.mnemonic = mnemonic
+        self.ss58_address = ss58_address
+        self.logger = myLogger(self.cli_name)
+        self.logger.info("Start %s Program." % self.cli_name)
+
+    def __call__(self, func):
+        name = func.__name__
+        if name == "mnemonic":
+            AccountManager(self.logger, self.mnemonic, self.ss58_address).createMnemonic()
+        elif name == "create":
+            AccountManager(self.logger, self.mnemonic, self.ss58_address).createNewAccount()
+        elif name == "info":
+            AccountManager(self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
+        elif name == "keypair":
+            AccountManager(self.logger, self.mnemonic, self.ss58_address).getAddressFromMnemonic()
+        else:
+            pass
+
+### ----- Move to Utils file after finished factoring/debugging ----- ###
+
 class AccountBalanceForBonding:
+    """
+    Class is to return balance of bonding - verifications
+    TODO: Better explanation
+    # TODO:
+    # * rename AccountBalance class; better inheretence/abstraction
+    # * use accountManager
+    # * called in substrateCallManagerUtils.py
+    # Why doens't this go in DotAccountCall?
+    """
     def __init__(self, logger, ss58_address, account: AccountManager):
         self.logger = logger
         self.ss58_address = ss58_address
 
         # takes AccountManager as initialization arguement
         if(isinstance(account, AccountManager()) == False):
-            logger.warning("AccountManager type not passed to initialize AccountBalanceForBonding. Failing.")
+            logger.warning("AccountManager type *not* passed to initialize AccountBalanceForBonding. Failing.")
             return False
 
     def getAccountBalanceForBonding(self):
@@ -88,15 +144,15 @@ class AccountBalanceForBonding:
 
         return totalAccountBalance
 
-"""
-Class creates a mnemonic, currently has no other purpose
-* If additional functions on a mnemonic need to be added, can change class name to MnemonicManager
-* For security reasons, do not store Mnemonics in this class
-
-"""
-class Mnemonic:
-    def __init__(self):
-        pass
+class MnemonicManager:
+    """
+    Class creates a mnemonic and prints in the log, currently has no other purpose
+    * For security reasons, do not store the mnemonics
+    * This class is intentionally separate from AccountManager as there may be times
+    when features of mnemonics should be added/changed without concerning AccountManager
+    """
+    def __init__(self, logger):
+        self.logger = logger
 
     def createMnemonic(self):
         mnemonic = Keypair.generate_mnemonic()
@@ -107,6 +163,7 @@ class Mnemonic:
     note : please write down this mnemonic in paper and stored in a save place.
     learn more about mnemonic : https://coinmarketcap.com/alexandria/glossary/mnemonic-phrase
             """
+
         try:
             self.logger.info(createMnemonicLogMessage)
             return mnemonic
@@ -114,27 +171,20 @@ class Mnemonic:
             self.logger.critical(f"error : {e}")
             return False
 
-
-"""
-Class creates a keypair
-"""
 class KeyPairManager:
+    """
+    Class creates a keypair
+    """
     def __init__(self, logger, mnemonic):
         self.logger = logger
         self.mnemonic = mnemonic
         # what to do if no mnemonic is passed? Adapt fxn signature.
 
-    def testfxn1(self):
-        return True
+    # previously dotCreateKeyPair
     # def createKeyPair(self):
-    #     pass:
-
-    def testfxn2(self):
-        return True
-
-    def dotCreateKeyPair(self):
+    def getAddressFromMnemonic(self):
         """
-        Function creates a keypair for dot given a mnemonic and returns it (or exits the system if it fails).
+        Calculates the dot address given a mnemonic and prints and returns it (or exits the system if it fails).
         It's currently kept outside the DotAccountCall as an auxilary function in order to keep the pre-defined
         function set in DotAccountCall (i.e. createMnemonic, getAccountInfos, etc.)
         Function is called from DotAccountCall and DotSubstrateCall
@@ -143,14 +193,14 @@ class KeyPairManager:
 
         # If a mnemonic is not passed in, the default in the above library will be used
         # however, we will enforce that "something" is passed in to avoid the default (len 10 is arbitrary)
-        if (len(mnemonic) < 10):
+        if (len(self.mnemonic) < 10):
                 logger.critical("A bad mnemonic as been passed to create the keypair")
                 return False
 
         try:
             # Keypair ~ https://github.com/polkascan/py-substrate-interface#keypair-creation-and-signing
-            key = Keypair.create_from_mnemonic(mnemonic=mnemonic, ss58_format=activeConfig.ss58_format)
-            logger.info(f"""create key pair\n\n
+            key = Keypair.create_from_mnemonic(mnemonic=self.mnemonic, ss58_format=activeConfig.ss58_format)
+            self.logger.info(f"""Here is the address associated with the above mnemonic:\n
         {key}
          \n\n""")
 
@@ -159,24 +209,24 @@ class KeyPairManager:
                 return key
             else:
                 # if the key verification fails, exit immediatly
-                logger.critical("\nDO NOT USE KEY. KEY INCORRECTLY GENERATED.\n")
+                self.logger.critical("\nDO NOT USE KEY. KEY INCORRECTLY GENERATED.\n")
                 return False
 
         except ValueError:
             # more thorough check for the mnemonic below
 
             # split mnemonic by space into words
-            splitMnemonic = mnemonic.split(" ")
+            splitMnemonic = self.mnemonic.split(" ")
 
             lengthMnemonic = len(splitMnemonic)
             # check word length and special character
             lengthWordInMnemonic = any(word for word in splitMnemonic if len(word) < 3 or len(word) > 8)
-            lengthOfDigitInMnemonicIfAny = any(s for s in mnemonic if s in invalidCharacters)
+            lengthOfDigitInMnemonicIfAny = any(s for s in self.mnemonic if s in invalidCharacters)
 
             # Checking mnemonic length
             # length doesn't meet the standard
             if lengthMnemonic not in [12, 15, 18, 21, 24]:
-                logger.critical(
+                self.logger.critical(
                     "Number of words must be one of the following: [12, 15, 18, 21, 24], but it is not (%d)."
                     % lengthMnemonic)
                 return False
@@ -185,49 +235,25 @@ class KeyPairManager:
             else:
                 # Checking mnemonic for invalid characters (non alphabet)
                 if lengthOfDigitInMnemonicIfAny:
-                    logger.critical("Mnemonic words must be alphabet words.")
+                    self.logger.critical("Mnemonic words must be alphabet words.")
                     return False
 
                 # check word len in mnemonic min = 2 max = 8 or the mnemonic doesn't have valid word
-                elif lengthWordInMnemonic or not bip39_validate(mnemonic):
-                    logger.critical("Please check for messing strings.")
+                elif lengthWordInMnemonic or not bip39_validate(self.mnemonic):
+                    self.logger.critical("Please check for messing strings.")
                     return False
 
 
-"""
-Class for executing account related calls for DOT
-The following calls are made to this class:
-* All calls in accountingArgParser.py (mnemonic, keypair, info, create)
-"""
-class DotAccountCall:
-    def __init__(self, mnemonic="", ss58_address=""):
-        self.cli_name = "Accounting"
-        self.mnemonic = mnemonic
-        self.ss58_address = ss58_address
-        self.logger = myLogger(self.cli_name)
-        self.logger.info("Start %s Program." % self.cli_name)
 
-    def __call__(self, func):
-        name = func.__name__
-        if name == "mnemonic":
-            self.createMnemonic()
-        elif name == "create":
-            self.createAccount()
-        elif name == "info":
-            self.getAccountInfos(self.ss58_address)
-        elif name == "keypair":
-            #double check this call is correct
-            KeyPairManager(self.logger, mnemonic=self.mnemonic).dotCreateKeyPair()
-        else:
-            pass
+            ### TEST THIS CLASS BEFORE DELETING BELOW ###
 
-    def createMnemonic(self):
-        m = MnemonicManager()
-        return m.createMnemonic()
+    # def createMnemonic(self):
+    #     m = MnemonicManager()
+    #     return m.createMnemonic()
 
-    def getAccountInfos(self, ss58_address):
-        a = AccountManager(self.logger, self.mnemonic, self.ss58_address)
-        a.getAllAccountInfo()
+    # def getAccountInfos(self, ss58_address):
+    #     a = AccountManager(self.logger, self.mnemonic, self.ss58_address)
+    #     a.getAllAccountInfo()
     #     try:
     #         value = activeConfig.activeSubstrate.query('System', 'Account', params=[ss58_address]).value
     #         fee_frozen = int(value['data']['fee_frozen']) / activeConfig.coinDecimalPlaces
@@ -249,8 +275,8 @@ class DotAccountCall:
     #     except Exception as e:
     #         self.logger.error(f"{e}")
 
-    def createAccount(self) -> json:
-        return AccountManager().createAccount()
+    # def createAccount(self) -> json:
+    #     return AccountManager().createAccount()
         # createAccountMnemonic = self.createMnemonic()
         # createAccountKeyPair = dotCreateKeyPair(self.logger, createAccountMnemonic)
         # # check if mnemonic is created if this pass keypair will pass without errors
@@ -258,3 +284,6 @@ class DotAccountCall:
         #     return False
         # return True
 
+# helper print method for checking the code, can delete function and all references anytime
+def printTmp(printMe):
+    print("\n\n****************\n %s \n****************\n\n" % printMe)
