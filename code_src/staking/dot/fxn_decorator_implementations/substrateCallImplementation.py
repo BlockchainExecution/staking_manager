@@ -6,7 +6,7 @@ from substrateinterface import Keypair # github: https://github.com/polkascan/py
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
-from code_src.staking.dot.fxn_decorator_implementations.substrateCallManagerUtils import *
+from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementationUtils import *
 # TODO: 
 # consider adding dotCreateKeyPair() to DotAccountCall so that this file only has to import
 # accountImplementation and not a utils file for accountImplementation... importing another utils file isn't very clean
@@ -56,7 +56,8 @@ class DotSubstrateCall:
 
         #this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
         # TODO: should call AccountImplementation().createAccount() instead to keep everything needed in accountImplementation.py
-        this_keypair = KeyPairManager(logger=self.logger, mnemonic=self.seed).getAddressFromMnemonic()
+        # this_keypair = KeyPairImplementation().getAddressFromMnemonic()
+        this_keypair = accountImplementation(logger=self.logger, mnemonic=self.seed)
 
         extrinsic = activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_keypair)
         """None

@@ -1,4 +1,4 @@
-from code_src.staking.dot.fxn_decorator_implementations.substrateCallManager import DotSubstrateCall
+from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementation import DotSubstrateCall
 from common import MyHelpFormatter
 from code_src.staking.dot.dotArgparserUtil import actionSeed, actionNumberOfTokens, actionControllerAddress, \
     actionRewardsDestination, \
