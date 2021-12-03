@@ -27,7 +27,6 @@ class bondingValidator:
         self.validateAccountDataBeforeBonding()
 
     def validateAccountDataBeforeBonding(self):
-        printTmp("In validateAccountDataBeforeBonding")
         """
         Before we bond any coins we need to check account balance for two main things :
           1 - minimum dot staking amount witch is by time of writing (21/11/2021) is 120 DOT.
@@ -69,7 +68,6 @@ class bondingValidator:
         """
         Function calculates and compares account balance vs minimum balance needed to stake
         """
-        printTmp("in validateAcctBalanceForBonding")
         # check requirements
         accountToVerify = AccountImplementation(self.logger, ss58_address=self.ss58_address)
         totalAccountBalance = accountToVerify.getAccountBalance("bonding")
