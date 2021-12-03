@@ -29,7 +29,7 @@ def accountingArgParser(parent_parser):
             pass
 
     # create_keypair
-    @subcommand(parent=accountingDotSubParser, subHelp="create a key pair from seed", epilog=exampleCreateKeypair,
+    @subcommand(parent=accountingDotSubParser, subHelp="get an address from a mnemonic", epilog=exampleCreateKeypair,
                 reqArgs=[actionSeed()],
                 optArgs=[actionHelp()])
     def keypair(args):
