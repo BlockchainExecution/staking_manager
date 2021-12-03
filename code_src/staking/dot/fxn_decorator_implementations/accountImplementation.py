@@ -6,22 +6,22 @@ from substrateinterface import Keypair # github: https://github.com/polkascan/py
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
-from code_src.staking.dot.fxn_decorator_implementations.accountManagerUtils import *
+from code_src.staking.dot.fxn_decorator_implementations.accountImplementationUtils import *
 
-class AccountManager:
+class AccountImplementation:
     """
     * TODO: rename to AccountImplementation (big refactor)
 
-    AccountManager is a class for containing functions related to accounts.
+    AccountImplementation is a class for containing functions related to accounts.
     An "account" is defined as keypair with associated data.
 
-    AccountManager also serves as a kind of interface for all functions outside accountManager.py and
-    accountManagerUtils.py to have 1 reference point for 'account' related functions. 
-    Any classes/functions outside accountManager.py and accountManagerUtils.py should not need to 
-    directly refer to any code in accountManagerUtils.py
+    AccountImplementation also serves as a kind of interface for all functions outside accountImplementation.py and
+    accountImplementationUtils.py to have 1 reference point for 'account' related functions. 
+    Any classes/functions outside accountImplementation.py and accountImplementationUtils.py should not need to 
+    directly refer to any code in accountImplementationUtils.py
 
-    Therefore, some of the functions in AccountManager are "redundant", e.g. 
-    createMnemonic just calls MnemonicManager in accountManagerUtils.py
+    Therefore, some of the functions in AccountImplementation are "redundant", e.g. 
+    createMnemonic just calls MnemonicManager in accountImplementationUtils.py
     """
     def __init__(self, logger, mnemonic="", ss58_address=""):
         self.mnemonic = mnemonic
@@ -31,7 +31,7 @@ class AccountManager:
     def createNewAccount(self) -> json:
         # TODO: createAccount is not returning a json, is that a problem?
         # MnemonicManager is called here instead of self.createMnemonic() because it's better
-        # for functions in the AccountManager class to directly call the implementation classes
+        # for functions in the AccountImplementation class to directly call the implementation classes
         newMnemonic = MnemonicManager(self.logger).createMnemonic()
         createAccountKeyPair = KeyPairManager(self.logger, newMnemonic).getAddressFromMnemonic()
         # check if mnemonic is created if this pass keypair will pass without errors
@@ -41,18 +41,18 @@ class AccountManager:
 
     def createMnemonic(self):
         """
-        The purpose of this function is to provide a function in AccountManager class
-        to create a mnemonic without requiring a function outside accountManager.py to
-        call a function in accountManagerUtils.py
+        The purpose of this function is to provide a function in AccountImplementation class
+        to create a mnemonic without requiring a function outside accountImplementation.py to
+        call a function in accountImplementationUtils.py
         """
         newMnemonic = MnemonicManager(self.logger).createMnemonic()
         return newMnemonic
 
     def getAddressFromMnemonic(self):
         """
-        The purpose of this function is to provide a function in AccountManager class
-        to get an address from a mnemonic without requiring a function outside accountManager.py
-        to call a function in accountManagerUtils.py
+        The purpose of this function is to provide a function in AccountImplementation class
+        to get an address from a mnemonic without requiring a function outside accountImplementation.py
+        to call a function in accountImplementationUtils.py
         """
         address = KeyPairManager(self.logger, self.mnemonic).getAddressFromMnemonic()
         return address
@@ -98,13 +98,13 @@ class DotAccountCall:
     def __call__(self, func):
         name = func.__name__
         if name == "mnemonic":
-            AccountManager(self.logger, self.mnemonic, self.ss58_address).createMnemonic()
+            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).createMnemonic()
         elif name == "create":
-            AccountManager(self.logger, self.mnemonic, self.ss58_address).createNewAccount()
+            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).createNewAccount()
         elif name == "info":
-            AccountManager(self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
+            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
         elif name == "keypair":
-            AccountManager(self.logger, self.mnemonic, self.ss58_address).getAddressFromMnemonic()
+            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).getAddressFromMnemonic()
         else:
             pass
 
@@ -116,17 +116,17 @@ class AccountBalanceForBonding:
     TODO: Better explanation
     # TODO:
     # * rename AccountBalance class; better inheretence/abstraction
-    # * use accountManager
+    # * use accountImplementation
     # * called in substrateCallManagerUtils.py
     # Why doens't this go in DotAccountCall?
     """
-    def __init__(self, logger, ss58_address, account: AccountManager):
+    def __init__(self, logger, ss58_address, account: AccountImplementation):
         self.logger = logger
         self.ss58_address = ss58_address
 
-        # takes AccountManager as initialization arguement
-        if(isinstance(account, AccountManager()) == False):
-            logger.warning("AccountManager type *not* passed to initialize AccountBalanceForBonding. Failing.")
+        # takes AccountImplementation as initialization arguement
+        if(isinstance(account, AccountImplementation()) == False):
+            logger.warning("AccountImplementation type *not* passed to initialize AccountBalanceForBonding. Failing.")
             return False
 
     def getAccountBalanceForBonding(self):
@@ -148,8 +148,8 @@ class MnemonicManager:
     """
     Class creates a mnemonic and prints in the log, currently has no other purpose
     * For security reasons, do not store the mnemonics
-    * This class is intentionally separate from AccountManager as there may be times
-    when features of mnemonics should be added/changed without concerning AccountManager
+    * This class is intentionally separate from AccountImplementation as there may be times
+    when features of mnemonics should be added/changed without concerning AccountImplementation
     """
     def __init__(self, logger):
         self.logger = logger
@@ -252,7 +252,7 @@ class KeyPairManager:
     #     return m.createMnemonic()
 
     # def getAccountInfos(self, ss58_address):
-    #     a = AccountManager(self.logger, self.mnemonic, self.ss58_address)
+    #     a = AccountImplementation(self.logger, self.mnemonic, self.ss58_address)
     #     a.getAllAccountInfo()
     #     try:
     #         value = activeConfig.activeSubstrate.query('System', 'Account', params=[ss58_address]).value
@@ -276,7 +276,7 @@ class KeyPairManager:
     #         self.logger.error(f"{e}")
 
     # def createAccount(self) -> json:
-    #     return AccountManager().createAccount()
+    #     return AccountImplementation().createAccount()
         # createAccountMnemonic = self.createMnemonic()
         # createAccountKeyPair = dotCreateKeyPair(self.logger, createAccountMnemonic)
         # # check if mnemonic is created if this pass keypair will pass without errors

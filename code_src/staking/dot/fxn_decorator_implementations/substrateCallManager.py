@@ -9,8 +9,8 @@ from Logger import myLogger
 from code_src.staking.dot.fxn_decorator_implementations.substrateCallManagerUtils import *
 # TODO: 
 # consider adding dotCreateKeyPair() to DotAccountCall so that this file only has to import
-# accountManager and not a utils file for accountManager... importing another utils file isn't very clean
-from code_src.staking.dot.fxn_decorator_implementations.accountManagerUtils import *
+# accountImplementation and not a utils file for accountImplementation... importing another utils file isn't very clean
+from code_src.staking.dot.fxn_decorator_implementations.accountImplementationUtils import *
 
 
 class DotSubstrateCall:
@@ -55,7 +55,7 @@ class DotSubstrateCall:
         """
 
         #this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
-        # TODO: should call AccountManager().createAccount() instead to keep everything needed in accountManager.py
+        # TODO: should call AccountImplementation().createAccount() instead to keep everything needed in accountImplementation.py
         this_keypair = KeyPairManager(logger=self.logger, mnemonic=self.seed).getAddressFromMnemonic()
 
         extrinsic = activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_keypair)

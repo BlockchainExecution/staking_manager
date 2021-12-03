@@ -6,7 +6,7 @@ from substrateinterface import Keypair # github: https://github.com/polkascan/py
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
-from code_src.staking.dot.fxn_decorator_implementations.accountManager import AccountBalanceForBonding
+from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import AccountBalanceForBonding
 
 
 """
@@ -17,7 +17,7 @@ The other functions are primarily used to execute validateAccountDataBeforeBondi
 
 TODO:
 * Create class to hold the validation functions
-* Better integration with accountManager
+* Better integration with accountImplementation
 
 """
 
