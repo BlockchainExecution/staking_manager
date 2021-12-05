@@ -1,19 +1,72 @@
 # import generic dependencies
 import json
 import sys
-from bip39 import bip39_validate
-# TODO: can you confirm the below github for the substrateinterface library?
-from substrateinterface import Keypair # github: https://github.com/polkascan/py-substrate-interface
-from substrateinterface.exceptions import SubstrateRequestException
-from config import activeConfig
-from Logger import myLogger
+# import different logger?
+import argparse
+import unittest
+# import hypothesis# Add to requirements?
 # import specific project files
-from code_src.staking.dot.dotCmdDecorator import DotSubstrateCall
+# don't import AccountImplementation (class)
+# from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import DotAccountCall
+import tempHelperTestFile
 
+
+# __name = "StakingManager TESTS"
+# logger = myLogger(__name)
+# logger.info("Running full test suite...")
 
 """
 TODO:
 * Add some tests...
 * Rename file...
+* Include the argparser in the tests -> e2e
 
 """
+
+def printTmp(printMe):
+	print("\n\n************* %s *************\n\n" %printMe)
+
+
+if __name__ == "__main__":
+
+	printTmp("In main in testFileTmpName.py")
+	# below 3 lines work as expected
+	import sys
+	printMe = sys.argv[1:]
+	printTmp("Command is: %s" %printMe)
+
+	# tempHelperTestFile.main() ~ does not call main, AttributeError, would need to change StakingManager
+	#execfile('file.py')
+
+	# make e2e tests this way... expected function behavior.
+	testCmd = "python StakingManager.py dot accounting create"
+
+	import os
+	# need to set directory
+	# os.system(testCmd)
+
+	stream = os.popen(testCmd)
+	myOut = stream.read()
+	printTmp(myOut)
+
+	"""
+	Testing the accounting commands
+	"""
+	# create mnemonic
+	# how do I want to write these tests...
+	# start with "e2e" tests which demonstrate the intended functionality of the system
+
+
+
+
+	# get address from mnemonic
+
+	# get account info
+
+	# create an account
+
+
+	"""
+	Testing the bonding commands
+	"""
+
