@@ -12,9 +12,12 @@ run `python StakingManager.py dot -h`
 	- Creating a mnemonic, keypair, getting acct info
 	- Bonding, unbonding, rebonding, withdrawing
 	- Nominating (Staking), setting staker requirements
-* Validations and error handling for staking:
+* Validations
 	- Keep-alive checks (existential deposit)
 	- https://wiki.polkadot.network/docs/maintain-errors
+* Error handling
+* Tests
+	- e2e tests (inclusive of CLI commands)
 
 ### Codebase Notes:
 * StakingManager.py is the cli executed file
