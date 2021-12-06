@@ -66,6 +66,18 @@ if __name__ == "__main__":
 	# tempHelperTestFile.main() ~ does not call main, AttributeError, would need to change StakingManager
 	#execfile('file.py')
 
+	"""
+	Testing the accounting commands
+	"""
+
+	"""
+	Test 1: Accounting command > create
+	"""
+
+	# create mnemonic
+	# how do I want to write these tests...
+	# start with "e2e" tests which demonstrate the intended functionality of the system
+
 	# make e2e tests this way... expected function behavior.
 	testCmd = "python StakingManager.py dot accounting create"
 	testCmd1 = "StakingManager.py dot accounting create"
@@ -86,29 +98,41 @@ if __name__ == "__main__":
 	import config
 	config.activeConfig = config.TestingConfig
 
-	import subprocess
+	def generateCliAccountingCommand(cmd: list) -> list:
+		argList = ['StakingManager.py', 'dot', 'accounting']
+		argList = argList + cmd
+		command = ['python'] + argList
+		return command
 
-	argList = ['StakingManager.py', 'dot', 'accounting', 'create']
-	testCmdList = ['python'] + argList
-	process = subprocess.Popen(testCmdList,
-	                     stdout=subprocess.PIPE, 
-	                     stderr=subprocess.PIPE)
-	stdout, logOutput = process.communicate()
-	printTmp(stdout) #nothing gets printed here, kind of useless
-	printTmp(logOutput)
-	printTmp(type(logOutput))
+	def executeCliCommand(commandToExecute: list):
+		"""
+		Sends command as list to CLI. Returns the output as UTF8 string
+		"""
+		import subprocess
+
+		process = subprocess.Popen(commandToExecute,
+		                     stdout=subprocess.PIPE, 
+		                     stderr=subprocess.PIPE)
+		stdout, logOutput = process.communicate()
+		printTmp(stdout) #nothing gets printed here, kind of useless
+		printTmp(logOutput)
+		printTmp(type(logOutput))
+		# converting logOutput from types bytes to string
+		logOutput = logOutput.decode('utf-8')
+		return logOutput
 
 	# What do I want to test in output?
 	# 1) address
 	# 2) keypair
 	# 3) log message? later, keep it simple (MVP)
 
+	createCmd = generateCliAccountingCommand(["create"])
+	createCmdOutput = executeCliCommand(createCmd)
+
 	import re
 
-	# converting logOutput from types bytes to string
-	logOutput = logOutput.decode('utf-8')
 	# mnemonic can be btwn 12 and 24 words
-	teststring = re.search("(mnemonic :)((\\s\\w+){12,24})", logOutput)
+	teststring = re.search("(mnemonic :)((\\s\\w+){12,24})", createCmdOutput)
 	# get the relevant string from Match object (returned by re)
 	teststring = teststring.group()
 	# get rid of the "mnemonic : ", leaving only the mnemonic itself
@@ -136,7 +160,7 @@ if __name__ == "__main__":
 	addressToValidate = keypairObjectWithAddress.ss58_address
 
 	# getting address to validate
-	teststring = re.search("(address=)\\w+", logOutput)
+	teststring = re.search("(address=)\\w+", createCmdOutput)
 	# get the relevant string from Match object (returned by re)
 	teststring = teststring.group()
 	# get rid of the "mnemonic : ", leaving only the mnemonic itself
@@ -146,14 +170,48 @@ if __name__ == "__main__":
 	# printTmp(testAddress)
 
 	if(addressToValidate == testAddress):
-		printTmp("TEST PASSED")
+		printTmp("TEST 1 PASSED")
+	else:
+		printTmp("TEST 1 FAILED")
+
+
 
 	"""
-	Testing the accounting commands
+	Test 2: Accounting command > info
 	"""
-	# create mnemonic
-	# how do I want to write these tests...
-	# start with "e2e" tests which demonstrate the intended functionality of the system
+	# Account 5GVz... is fixed, it should not recieve/send funds
+	infoCmd = generateCliAccountingCommand(["info", "-ca", "5GVzG3QJvRc6MEtxaJZnLB3PAhQT8eMgesqgHxYiiQJE4HNv"])
+	infoCmdOutput = executeCliCommand(infoCmd)
+
+	def validateTest2(infoCmdOutput):
+		# match free : 0.314159
+		teststring = re.search("(free : \\d\\.\\d+)", infoCmdOutput)
+
+		# get the relevant string from Match object (returned by re)
+		if (teststring):
+			teststring = teststring.group()
+			testValue = teststring[7:]
+			return testValue
+		else:
+			printTmp("TEST 2 FAILED")
+			return False
+
+	testValue = validateTest2(infoCmdOutput)
+
+	if(float(testValue) == 0.314159):
+		printTmp("TEST 2 PASSED")
+	else:
+		printTmp("TEST 2 FAILED")
+
+
+	"""
+	Test 3: Accounting command > mnemonic
+	"""
+
+
+	"""
+	Test 4: Accounting command > keypair
+	"""
 
 
 

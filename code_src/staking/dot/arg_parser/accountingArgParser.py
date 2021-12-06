@@ -29,6 +29,8 @@ def accountingArgParser(parent_parser):
             pass
 
     # create_keypair
+    # right now, this will create a keypair given a mnemonic,
+    # but only the public key is returned (printed) on CLI
     @subcommand(parent=accountingDotSubParser, subHelp="get an address from a mnemonic", epilog=exampleCreateKeypair,
                 reqArgs=[actionSeed()],
                 optArgs=[actionHelp()])

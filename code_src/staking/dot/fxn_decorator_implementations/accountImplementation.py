@@ -20,10 +20,6 @@ class AccountImplementation:
 
     Therefore, some of the functions in AccountImplementation are "redundant", e.g. 
     createMnemonic just calls MnemonicImplementation in accountImplementationUtils.py
-
-    TODO:
-    * Will probably move DotAccountCall to its own file with a name specific to it. Then e2e testing files
-    will import only DotAccountCall file and not accountImplementation.py
     """
     def __init__(self, logger, mnemonic=None, ss58_address=None):
         self.mnemonic = mnemonic
@@ -61,13 +57,13 @@ class AccountImplementation:
 
     def getAllAccountInfo(self):
         try:
-            value = activeConfig.activeSubstrate.query('System', 'Account', params=[ss58_address]).value
+            value = activeConfig.activeSubstrate.query('System', 'Account', params=[self.ss58_address]).value
             fee_frozen = int(value['data']['fee_frozen']) / activeConfig.coinDecimalPlaces
             free = int(value['data']['free']) / activeConfig.coinDecimalPlaces
             reserved = int(value['data']['reserved']) / activeConfig.coinDecimalPlaces
             misc_frozen = int(value['data']['misc_frozen']) / activeConfig.coinDecimalPlaces
 
-            self.logger.info(f"""account {ss58_address} infos
+            self.logger.info(f"""account {self.ss58_address} infos
 
             nonce : {value['nonce']}
             consumers : {value['consumers']}
@@ -97,9 +93,13 @@ class AccountImplementation:
 
 class DotAccountCall:
     """
-    Class for executing account related calls for DOT
+    Class for executing account related CLI calls for DOT
     The following calls are made to this class:
     * All calls in accountingArgParser.py (mnemonic, keypair, info, create)
+
+    TODO:
+    * Will probably move DotAccountCall to its own file with a name specific to it. Then e2e testing files
+    will import only DotAccountCall file and not accountImplementation.py
     """
     def __init__(self, mnemonic="", ss58_address=""):
         self.cli_name = "Accounting"
