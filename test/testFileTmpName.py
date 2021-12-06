@@ -98,7 +98,7 @@ if __name__ == "__main__":
 	import config
 	config.activeConfig = config.TestingConfig
 
-	def generateCliAccountingCommand(cmd: list) -> list:
+	def generateCliDotAccountingCommand(cmd: list) -> list:
 		argList = ['StakingManager.py', 'dot', 'accounting']
 		argList = argList + cmd
 		command = ['python'] + argList
@@ -126,7 +126,7 @@ if __name__ == "__main__":
 	# 2) keypair
 	# 3) log message? later, keep it simple (MVP)
 
-	createCmd = generateCliAccountingCommand(["create"])
+	createCmd = generateCliDotAccountingCommand(["create"])
 	createCmdOutput = executeCliCommand(createCmd)
 
 	import re
@@ -180,7 +180,7 @@ if __name__ == "__main__":
 	Test 2: Accounting command > info
 	"""
 	# Account 5GVz... is fixed, it should not recieve/send funds
-	infoCmd = generateCliAccountingCommand(["info", "-ca", "5GVzG3QJvRc6MEtxaJZnLB3PAhQT8eMgesqgHxYiiQJE4HNv"])
+	infoCmd = generateCliDotAccountingCommand(["info", "-ca", "5GVzG3QJvRc6MEtxaJZnLB3PAhQT8eMgesqgHxYiiQJE4HNv"])
 	infoCmdOutput = executeCliCommand(infoCmd)
 
 	def validateTest2(infoCmdOutput):
@@ -207,20 +207,34 @@ if __name__ == "__main__":
 	"""
 	Test 3: Accounting command > mnemonic
 	"""
+	mnemonicCmd = generateCliDotAccountingCommand(["mnemonic"])
+	mnemonicCmdOutput = executeCliCommand(mnemonicCmd)
 
+	def validateTest3(infoCmdOutput):
+		# match free : 0.314159
+		teststring = re.search("(mnemonic :)((\\s\\w+){12,24})", infoCmdOutput)
+
+		# get the relevant string from Match object (returned by re)
+		if (teststring):
+			teststring = teststring.group()
+			testValue = teststring[:11]
+			return testValue
+		else:
+			printTmp("TEST 2 FAILED")
+			return False
+
+	testValue = validateTest3(mnemonicCmdOutput)
+
+	# TODO: need a much better way to check mnemonic correctness
+	if(testValue == "mnemonic : "):
+		printTmp("TEST 3 PASSED")
+	else:
+		printTmp("TEST 3 FAILED")
 
 	"""
 	Test 4: Accounting command > keypair
 	"""
-
-
-
-
-	# get address from mnemonic
-
-	# get account info
-
-	# create an account
+	# TODO: create this test, Test 4. Probably not urgent given tests 1-3
 
 
 	"""
