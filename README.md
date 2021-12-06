@@ -12,12 +12,18 @@ run `python StakingManager.py dot -h`
 	- Creating a mnemonic, keypair, getting acct info
 	- Bonding, unbonding, rebonding, withdrawing
 	- Nominating (Staking), setting staker requirements
-* Validations and error handling for staking:
+* Validations
 	- Keep-alive checks (existential deposit)
 	- https://wiki.polkadot.network/docs/maintain-errors
+* Error handling
+	- TODO
+* Tests
+	- e2e tests (inclusive of CLI commands)
+	- Tests are major WIP, may fail and exit
 
 ### Codebase Notes:
-* StakingManager.py is the cli executed file
+* To run the program, execute StakingManager.py
+* TODO: To run the tests, execute test/...
 * Most "unique" logic is in fxn_decorator_implementations folder
 * config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
