@@ -50,4 +50,8 @@ Instead, all other files should only ever have to import accountManager.py.
 * Improved validations and error handling, e.g. to avoid existential deposit
 * Adding new substrate based chains to stake on
 * check TODOs in substrateCallImplementationUtils
+* rename code_src > src
+* rename all cases of "bounder" to "bonder"
+
+
 
