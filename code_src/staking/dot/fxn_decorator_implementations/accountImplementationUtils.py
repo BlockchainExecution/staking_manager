@@ -50,7 +50,7 @@ class KeyPairImplementation:
     # def createKeyPair(self):
     def getAddressFromMnemonic(self):
         """
-        Calculates the dot address given a mnemonic and prints and returns it (or exits the system if it fails).
+        Creates a Keypair object prints (the public address) and returns it, or exits the system if it fails.
         It's currently kept outside the DotAccountCall as an auxilary function in order to keep the pre-defined
         function set in DotAccountCall (i.e. createMnemonic, getAccountInfos, etc.)
         Function is called from DotAccountCall and DotSubstrateCall
@@ -60,12 +60,14 @@ class KeyPairImplementation:
         # If a mnemonic is not passed in, the default in the above library will be used
         # however, we will enforce that "something" is passed in to avoid the default (len 10 is arbitrary)
         if (len(self.mnemonic) < 10):
-                logger.critical("A bad mnemonic as been passed to create the keypair")
+                self.logger.critical("A bad mnemonic has been passed to create the keypair")
                 return False
 
         try:
             # Keypair ~ https://github.com/polkascan/py-substrate-interface#keypair-creation-and-signing
+            # Keypair returns Keypair object containing both private and public keys
             key = Keypair.create_from_mnemonic(mnemonic=self.mnemonic, ss58_format=activeConfig.ss58_format)
+            # TODO: key is an object, not the address, extract the address
             self.logger.info(f"""Here is the address associated with the above mnemonic:\n
         {key}
          \n\n""")

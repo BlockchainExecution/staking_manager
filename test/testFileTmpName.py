@@ -51,6 +51,8 @@ def printTmp(printMe):
 #     return h == nh
 
 
+# separate logger for testing?
+
 
 
 if __name__ == "__main__":
@@ -75,6 +77,14 @@ if __name__ == "__main__":
 	# stream = os.popen("python StakingManager.py dot accounting create")
 	# myOut = stream.read()
 	# printTmp(myOut)
+
+	import sys
+	sys.path.append("../staking_manager")
+
+	# Remember to _always_ set config.py to test -> should always be test, set here
+	# Make sure this is executed correctly
+	import config
+	config.activeConfig = config.TestingConfig
 
 	import subprocess
 
@@ -110,17 +120,33 @@ if __name__ == "__main__":
 	# I must be in /test/, need to import from parent dir
 	# Even though print(os.getcwd()) returns /staking_manager/
 	# ugh https://stackoverflow.com/questions/714063/importing-modules-from-parent-folder/50194143#50194143
+
+	# fixed the ModuleNotFoundError: No module named 'code_src' error
+	# what happens if executed twice?
+	# import sys
+	# sys.path.append("../staking_manager")
+
 	from code_src.staking.dot.fxn_decorator_implementations.accountImplementationUtils import *
 	from Logger import myLogger
 
-	addressToValidate = KeyPairImplementation(myLogger, testMnemonic).getAddressFromMnemonic()
+	keypairObjectWithAddress = Keypair.create_from_mnemonic(mnemonic=testMnemonic, 
+		ss58_format=config.activeConfig.ss58_format)
+	# get public key in ss58 format
+	# https://polkascan.github.io/py-substrate-interface/#substrateinterface.Keypair
+	addressToValidate = keypairObjectWithAddress.ss58_address
 
 	# getting address to validate
-	teststring = re.search("(mnemonic :)((\\s\\w+){12,24})", logOutput)
+	teststring = re.search("(address=)\\w+", logOutput)
 	# get the relevant string from Match object (returned by re)
 	teststring = teststring.group()
 	# get rid of the "mnemonic : ", leaving only the mnemonic itself
-	testMnemonic = teststring[11:]
+	testAddress = teststring[8:]
+
+	# printTmp(addressToValidate)
+	# printTmp(testAddress)
+
+	if(addressToValidate == testAddress):
+		printTmp("TEST PASSED")
 
 	"""
 	Testing the accounting commands
