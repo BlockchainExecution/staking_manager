@@ -40,14 +40,31 @@ if __name__ == "__main__":
 
 	# make e2e tests this way... expected function behavior.
 	testCmd = "python StakingManager.py dot accounting create"
+	testCmd1 = "StakingManager.py dot accounting create"
 
 	import os
 	# need to set directory
 	# os.system(testCmd)
 
-	stream = os.popen(testCmd)
-	myOut = stream.read()
-	printTmp(myOut)
+	# stream = os.popen("python StakingManager.py dot accounting create")
+	# myOut = stream.read()
+	# printTmp(myOut)
+
+	import subprocess
+
+	argList = ['StakingManager.py', 'dot', 'accounting', 'create']
+	testCmdList = ['python'] + argList
+	process = subprocess.Popen(testCmdList,
+	                     stdout=subprocess.PIPE, 
+	                     stderr=subprocess.PIPE)
+	stdout, stderr = process.communicate()
+	printTmp(stdout)
+	printTmp(stderr)
+
+	# What do I want to test in output?
+	# 1) address
+	# 2) keypair
+	# 3) log message? later, keep it simple (MVP)
 
 	"""
 	Testing the accounting commands
