@@ -7,6 +7,9 @@ run `python StakingManager.py dot -h`
     <br />- NOTE: because only polkadot is supported, you must give `dot` as the first argument.
     In the future, when we support additional networks, there will be other options to `dot`
 
+## Testing:
+run `python test/endToEndTests.py`
+
 ### Features:
 * Pretty intuitive ArgParser (see examples.py) for:
 	- Creating a mnemonic, keypair, getting acct info
@@ -18,7 +21,7 @@ run `python StakingManager.py dot -h`
 * Error handling
 	- TODO
 * Tests
-	- e2e tests (inclusive of CLI commands)
+	- e2e tests (inclusive of CLI commands) in `test/endToEndTests.py`
 	- Tests are major WIP, may fail and exit
 
 ### Codebase Notes:
