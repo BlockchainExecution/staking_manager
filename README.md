@@ -16,6 +16,7 @@ run `python StakingManager.py dot -h`
 	- Keep-alive checks (existential deposit)
 	- https://wiki.polkadot.network/docs/maintain-errors
 * Error handling
+	- TODO
 * Tests
 	- e2e tests (inclusive of CLI commands)
 
