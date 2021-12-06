@@ -6,21 +6,18 @@ from substrateinterface import Keypair # github: https://github.com/polkascan/py
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
-from code_src.staking.dot.fxn_decorator_implementations.substrateCallManagerUtils import *
-# TODO: 
-# consider adding dotCreateKeyPair() to DotAccountCall so that this file only has to import
-# accountManager and not a utils file for accountManager... importing another utils file isn't very clean
-from code_src.staking.dot.fxn_decorator_implementations.accountManagerUtils import *
+from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementationUtils import *
+from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import *
 
 
-"""
-Generic class for executing calls to DOT network
-The following calls are made to this class:
-* All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
-* Some calls in nominatorArgParser.py (nominate, unnominate)
-* 1 call in stakerArgParser (staker)
-"""
 class DotSubstrateCall:
+    """
+    Generic class for executing calls to DOT network
+    The following calls are made to this class:
+    * All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
+    * Some calls in nominatorArgParser.py (nominate, unnominate)
+    * 1 call in stakerArgParser (staker)
+    """
     def __init__(self, cli_name, call_module, call_params, seed):
         self.call_module = call_module
         self.call_params = call_params
@@ -54,9 +51,12 @@ class DotSubstrateCall:
         :return:
         """
 
-        this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
-        
-        extrinsic = activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_keypair)
+        #this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
+        # TODO: should call AccountImplementation().createAccount() instead to keep everything needed in accountImplementation.py
+        # this_keypair = KeyPairImplementation().getAddressFromMnemonic()
+        this_address = AccountImplementation(logger=self.logger, mnemonic=self.seed).getAddressFromMnemonic()
+
+        extrinsic = activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_address)
         """None
         {'substrate': < substrateinterface.base.SubstrateInterfaceobject at 0x000001F7C2F73F70 >, 
         'extrinsic_hash': '0xa9719ca1430e4a9f0305b03e4b6bdd582458525bcc44b01db3caa7fa7d933867', 
