@@ -27,8 +27,11 @@ run `python StakingManager.py dot -h`
 * Most "unique" logic is in fxn_decorator_implementations folder
 * config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
-    - SubstrateInterface (py): https://github.com/polkascan/py-substrate-interface
-    - https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
+    - SubstrateInterface (py):
+    	+ Github: https://github.com/polkascan/py-substrate-interface
+    	+ Documentation: https://polkascan.github.io/py-substrate-interface/
+    - SS58:
+    	+ Github: https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
 
 ### Architecture:
 * TODO
