@@ -19,9 +19,11 @@ run `python StakingManager.py dot -h`
 	- TODO
 * Tests
 	- e2e tests (inclusive of CLI commands)
+	- Tests are major WIP, may fail and exit
 
 ### Codebase Notes:
-* StakingManager.py is the cli executed file
+* To run the program, execute StakingManager.py
+* TODO: To run the tests, execute test/...
 * Most "unique" logic is in fxn_decorator_implementations folder
 * config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
