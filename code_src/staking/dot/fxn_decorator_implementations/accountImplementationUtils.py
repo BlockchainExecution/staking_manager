@@ -39,6 +39,7 @@ class MnemonicImplementation:
 class KeyPairImplementation:
     """
     Class creates a keypair
+    + validates mnemonic, split validation into a separate function and add to MnemonicImplementation
     """
     def __init__(self, logger, mnemonic):
         self.logger = logger

@@ -20,6 +20,10 @@ class AccountImplementation:
 
     Therefore, some of the functions in AccountImplementation are "redundant", e.g. 
     createMnemonic just calls MnemonicImplementation in accountImplementationUtils.py
+
+    TODO:
+    * Will probably move DotAccountCall to its own file with a name specific to it. Then e2e testing files
+    will import only DotAccountCall file and not accountImplementation.py
     """
     def __init__(self, logger, mnemonic=None, ss58_address=None):
         self.mnemonic = mnemonic
@@ -158,45 +162,6 @@ class AccountBalanceForBonding:
         totalAccountBalance = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
 
         return totalAccountBalance
-
-            ### TEST THIS CLASS BEFORE DELETING BELOW ###
-
-    # def createMnemonic(self):
-    #     m = MnemonicImplementation()
-    #     return m.createMnemonic()
-
-    # def getAccountInfos(self, ss58_address):
-    #     a = AccountImplementation(self.logger, self.mnemonic, self.ss58_address)
-    #     a.getAllAccountInfo()
-    #     try:
-    #         value = activeConfig.activeSubstrate.query('System', 'Account', params=[ss58_address]).value
-    #         fee_frozen = int(value['data']['fee_frozen']) / activeConfig.coinDecimalPlaces
-    #         free = int(value['data']['free']) / activeConfig.coinDecimalPlaces
-    #         reserved = int(value['data']['reserved']) / activeConfig.coinDecimalPlaces
-    #         misc_frozen = int(value['data']['misc_frozen']) / activeConfig.coinDecimalPlaces
-
-    #         self.logger.info(f"""account {ss58_address} infos
-
-    # nonce : {value['nonce']}
-    # consumers : {value['consumers']}
-    # providers : {value['providers']}
-    # sufficients : {value['sufficients']}
-    # free : {free} {activeConfig.coinName}
-    # reserved : {reserved} {activeConfig.coinName}
-    # misc_frozen : {misc_frozen} {activeConfig.coinName}
-    # fee_frozen : {fee_frozen} {activeConfig.coinName}
-    # """)
-    #     except Exception as e:
-    #         self.logger.error(f"{e}")
-
-    # def createAccount(self) -> json:
-    #     return AccountImplementation().createAccount()
-        # createAccountMnemonic = self.createMnemonic()
-        # createAccountKeyPair = dotCreateKeyPair(self.logger, createAccountMnemonic)
-        # # check if mnemonic is created if this pass keypair will pass without errors
-        # if not createAccountKeyPair:
-        #     return False
-        # return True
 
 # helper print method for checking the code, can delete function and all references anytime
 def printTmp(printMe):
