@@ -26,7 +26,6 @@ run `python test/endToEndTests.py`
 
 ### Codebase Notes:
 * To run the program, execute StakingManager.py
-* TODO: To run the tests, execute test/...
 * Most "unique" logic is in fxn_decorator_implementations folder
 * config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
@@ -36,9 +35,6 @@ run `python test/endToEndTests.py`
     - SS58:
     	+ Github: https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
 
-### Architecture:
-* TODO
-
 ### Coding Patterns (Ideals):
 * SOLID - https://gist.github.com/dmmeteo/f630fa04c7a79d3c132b9e9e5d037bfd
 * If a filename has a corresponding Utils file, one should not ever need to import the Utils file except in its pair.
@@ -47,6 +43,12 @@ Instead, all other files should only ever have to import accountManager.py.
 * Pass "generic" arguements first in a function and more unique arguements subsequently
     - For example, in `def __init__(self, logger, accountManager)`, `self` and `logic` generic and therefore passed before `accountManager`
 
+### Architecture:
+* TODO
+* Code for parsing CLI commands is in arg_parser folder
+* The program "logic" is in fxn_decorator_implementations
+   - accountImplementation contains classes related to accounts
+   - substrateCallImplementation contains classes related to bonding and nominating
 
 #### Immediate TODOs:
 * Improved testing
