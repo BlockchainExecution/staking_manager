@@ -45,8 +45,8 @@ Instead, all other files should only ever have to import accountManager.py.
 
 ### Architecture:
 * TODO
-* Code for parsing CLI commands is in arg_parser folder
-* The program "logic" is in fxn_decorator_implementations
+* Code for parsing CLI commands is in `/arg_parser` folder
+* The program "logic" is in `/fxn_decorator_implementations`
    - accountImplementation contains classes related to accounts
    - substrateCallImplementation contains classes related to bonding and nominating
 
