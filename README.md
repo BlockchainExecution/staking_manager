@@ -7,7 +7,7 @@ run `python StakingManager.py dot -h`
     <br />- NOTE: because only polkadot is supported, you must give `dot` as the first argument.
     In the future, when we support additional networks, there will be other options to `dot`
 
-## Testing:
+### Testing:
 run `python test/endToEndTests.py`
 
 ### Features:
