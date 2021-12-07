@@ -23,6 +23,7 @@ run `python test/endToEndTests.py`
 * Tests
 	- e2e tests (inclusive of CLI commands) in `test/endToEndTests.py`
 	- Tests are major WIP, may fail and exit
+	- TODO: Setting up and testing on local network (see Testing Tools below)
 
 ### Codebase Notes:
 * To run the program, execute StakingManager.py
@@ -34,6 +35,9 @@ run `python test/endToEndTests.py`
     	+ Documentation: https://polkascan.github.io/py-substrate-interface/
     - SS58:
     	+ Github: https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
+    - TODO: Testing Tools:
+    	+ https://github.com/wpank/polkadot-local-network
+    	+ https://github.com/w3f/1k-validators-be/blob/master/src/misc/testSetup.ts
 
 ### Coding Patterns (Ideals):
 * SOLID - https://gist.github.com/dmmeteo/f630fa04c7a79d3c132b9e9e5d037bfd
