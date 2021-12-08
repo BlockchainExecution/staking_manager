@@ -2,7 +2,7 @@
 # stake dot
 exampleAccount = """
 Description
-  Accounting interface to Polkadot..
+  Account interface to Polkadot..
 
 example:
   python %(prog)s create -h

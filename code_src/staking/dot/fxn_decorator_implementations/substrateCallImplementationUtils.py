@@ -1,14 +1,9 @@
-import json
 import sys
-from bip39 import bip39_validate
-# TODO: can you confirm the below github for the substrateinterface library?
-from substrateinterface import Keypair # github: https://github.com/polkascan/py-substrate-interface
-from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
-from Logger import myLogger
 from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import AccountImplementation
 
-class bondingValidator:
+
+class BondingValidator:
     """
     Class which contains validation logic for bonding DOT.
     validateAccountDataBeforeBonding() is the primary use function for this class,
@@ -46,6 +41,9 @@ class bondingValidator:
 
         # TODO: check that controller address matches mnc
 
+        self.validateDecimalPoint()
+
+    def validateDecimalPoint(self):
         # check decimal writing
         lenNumberAfterDecimalPoint = len(str(self.tokenNumber).split(".")[1])
         if lenNumberAfterDecimalPoint > activeConfig.coinDecimalPlacesLength:
@@ -60,8 +58,9 @@ class bondingValidator:
         TODO: the minimum to stake and the minimum to bond are not the same I assume, which should we be using?
         TODO: confirm that the decimals of tokenNumber and stakeMin are directly comparable?
         """
-        if(self.tokenNumber < activeConfig.stakeMinimumAmount):
-            self.logger.warning(f"You are trying to bond {self.tokenNumber}, but the minimum required for bonding is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}\n")
+        if self.tokenNumber < activeConfig.stakeMinimumAmount:
+            self.logger.warning(
+                f"You are trying to bond {self.tokenNumber}, but the minimum required for bonding is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}\n")
             sys.exit(0)
 
     def validateAcctBalanceForBonding(self):
@@ -73,7 +72,7 @@ class bondingValidator:
         totalAccountBalance = accountToVerify.getAccountBalance("bonding")
 
         # we need always to reserve existentialDeposit
-        if totalAccountBalance < (self.tokenNumber + activeConfig.existentialDeposit):    
+        if totalAccountBalance < (self.tokenNumber + activeConfig.existentialDeposit):
             self.logger.warning(
                 f"Low balance\n"
                 f"Actual balance is : {totalAccountBalance} {activeConfig.coinName}\n"
