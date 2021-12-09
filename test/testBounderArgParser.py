@@ -1,9 +1,7 @@
 import unittest
-from utils import get_project_root_dir, executeCliCommand
-import os
+from common import venv_env, main_script
+from utils import executeCliCommand
 
-main_script = os.path.join(get_project_root_dir(), "StakingManager.py")
-venv_env = os.path.join(get_project_root_dir(), "venv\Scripts\python.exe")
 account = "5C7piVESupk6paengZYaGMzdU79YTgWKoafJPfE76pYkwdEM"
 mnemonic = "tomorrow pet when height sight target term flip deposit web moment wine"
 
@@ -54,6 +52,12 @@ class BounderTest(unittest.TestCase):
         self.assertTrue(
             "sent and included in block" in stdIn)
 
+    def test_bond_failure(self):
+        stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_bond_success ", "dot", "bounder", "bond",
+                                          "-m", mnemonic, "-ca", account, "-nt", "1")
+        self.assertTrue(
+            "The tx is already in pool. Either try on a different node, or wait to see if the initial transaction goes through" in stdIn)
+
     # unbond
     def test_unbond_without_args(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_unbond_without_args ", "dot", "bounder",
@@ -68,7 +72,7 @@ class BounderTest(unittest.TestCase):
         self.assertTrue(
             "error: the following arguments are required: -nt/--number_of_tokens" in stdIn)
 
-    def test_unbond(self):
+    def test_unbond_success(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_unbond_success ", "dot", "bounder", "unbond",
                                           "-m", mnemonic, "-nt", "1")
         self.assertTrue(
@@ -102,14 +106,14 @@ class BounderTest(unittest.TestCase):
             "error: the following arguments are required: -m/--mnemonic, -nt/--number_of_tokens" in stdIn)
 
     def test_bondextra_missing_args(self):
-        stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_bondextra_missing_args ", "dot", "bondextra",
+        stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_bondextra_missing_args ", "dot", "bounder",
                                           "bondextra",
                                           "-m", mnemonic)
         self.assertTrue(
             "error: the following arguments are required: -nt/--number_of_tokens" in stdIn)
 
-    def test_bondextra(self):
-        stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_bondextra_success ", "dot", "bondextra",
+    def test_bondextra_success(self):
+        stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_bondextra_success", "dot", "bounder",
                                           "bondextra", "-m", mnemonic, "-nt", "1")
         self.assertTrue(
             "sent and included in block" in stdIn)
@@ -128,10 +132,10 @@ class BounderTest(unittest.TestCase):
         self.assertTrue(
             "error: argument -m/--mnemonic: expected one argument" in stdIn)
 
-    def test_withdrawunbonded(self):
-        stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_withdrawunbonded_success ", "dot", "bounder",
+    def test_withdrawunbonded_success(self):
+        stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_withdrawunbonded_success", "dot", "bounder",
                                           "withdrawunbonded",
-                                          "-m", mnemonic, "-nt", "1")
+                                          "-m", mnemonic, "-nss", "1")
         self.assertTrue(
             "sent and included in block" in stdIn)
 

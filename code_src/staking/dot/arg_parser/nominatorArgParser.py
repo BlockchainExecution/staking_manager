@@ -1,8 +1,8 @@
 from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementation import DotSubstrateCall
 from common import MyHelpFormatter
 from code_src.staking.dot.dotArgparserUtil import actionMnemonic, actionValidatorAddress, actionHelp, subcommand, \
-    actionTest
-from examples import exampleNominator, exampleNominate, exampleUnominate
+    actionTest, actionNumberOfTokens
+from examples import exampleNominator, exampleNominate, exampleUnominateTmp, exampleUnominateAll
 
 
 def nominatorArgParser(parser_parent):
@@ -36,10 +36,26 @@ def nominatorArgParser(parser_parent):
         def nominate():
             pass
 
-    @subcommand(parent=nominatorSubParser, subHelp=exampleUnominate, reqArgs=[actionMnemonic()], optArgs=[actionTest()])
-    def unnominate(args):
-        @DotSubstrateCall(cli_name="unnominate", call_module="Staking", call_params={}, seed=args.mnemonic)
-        def unnominate():
+    # https://githubhelp.com/polkascan/py-scale-codec
+    # Stakers can be in any one of the three states: validating, nominating, or chilling. When a staker wants to
+    # temporarily pause their active engagement in staking but does not want to unbond their funds, they can choose
+    # to "chill" their involvement and keep their funds staked.
+    # so in fact to totally unstacked all the coin you need to chill and then unbound
+    # https://wiki.polkadot.network/docs/maintain-guides-how-to-chill
+    @subcommand(parent=nominatorSubParser, subHelp=exampleUnominateTmp, reqArgs=[actionMnemonic()],
+                optArgs=[actionTest()])
+    def stop_nominate_tmp(args):
+        @DotSubstrateCall(cli_name="Nominator", call_module="Staking", call_params={}, seed=args.mnemonic)
+        def chill():
+            pass
+
+    @subcommand(parent=nominatorSubParser, subHelp=exampleUnominateAll,
+                reqArgs=[actionMnemonic(), actionNumberOfTokens()],
+                optArgs=[actionTest()])
+    def stop_nominate_all(args):
+        @DotSubstrateCall(cli_name="Nominator", call_module="Staking", call_params={'value': args.number_of_tokens},
+                          seed=args.mnemonic)
+        def stop_nominate_all():
             pass
 
     return nominatorParser

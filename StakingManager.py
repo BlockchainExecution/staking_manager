@@ -75,7 +75,7 @@ if __name__ == "__main__":
         if 'dot' in var_args:
             dot = var_args['dot']
             if dot:
-                if dot == "staker":
+                if dot == "stake":
                     args.func(args)
 
                 # nominator

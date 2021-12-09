@@ -1,9 +1,7 @@
 import unittest
-from utils import get_project_root_dir, executeCliCommand
-import os
+from common import venv_env, main_script
+from utils import executeCliCommand
 
-main_script = os.path.join(get_project_root_dir(), "StakingManager.py")
-venv_env = os.path.join(get_project_root_dir(), "venv\Scripts\python.exe")
 account = "5C7piVESupk6paengZYaGMzdU79YTgWKoafJPfE76pYkwdEM"
 mnemonic = "tomorrow pet when height sight target term flip deposit web moment wine"
 mnemonic13 = "tomorrow pet when height sight target term flip deposit web moment wine gth"
@@ -11,14 +9,17 @@ mnemonicMinMax = "tomorrow pet when height sight target term flip deposit web mo
 mnemonicInvalidChar = "t#morrow pet w'en height sight target term flip /eposit web moment wine"
 
 
+# test class AccountImplementation
 class AccountTest(unittest.TestCase):
     def setUp(self):
         pass
 
+    # test func createNewAccount
     def test_create(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_create ", "dot", "account", "create")
         self.assertTrue("<Keypair (address=" in stdIn)
 
+    # test func getAllAccountInfo
     def test_info(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_info", "dot", "account", "info", "-ca", account)
         self.assertTrue(f"account {account} infos" in stdIn)
@@ -27,11 +28,13 @@ class AccountTest(unittest.TestCase):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_info_failure", "dot", "account", "info", "-ca")
         self.assertFalse(f"account {account} infos" in stdIn)
 
+    # test func createMnemonic
     def test_mnemonic(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_mnemonic", "dot", "account", "mnemonic")
         self.assertTrue(
             "learn more about mnemonic : https://coinmarketcap.com/alexandria/glossary/mnemonic-phrase" in stdIn)
 
+    # test func getAddressFromMnemonic
     def test_keypair(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_keypair", "dot", "account", "keypair", "-m",
                                           mnemonic)

@@ -135,8 +135,12 @@ class AccountBalanceForBonding:
         accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
                                                                 params=[self.ss58_address]).value
 
-        # we only need free and reserved information from the balance info
-        # free and reserved explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
+        # In general, the usable balance of the account is the amount that is free minus any funds that are considered
+        # frozen (either misc_frozen or fee_frozen) and depend on the reason for which the funds are to be used.
+        # If the funds are to be used for transfers, then the usable amount is the free amount minus
+        # any misc_frozen funds. However, if the funds are to be used to pay transaction fees,
+        # the usable amount would be the free funds minus fee_frozen.
+        # explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
         # TODO: decide what the account balance calculation "should" be, i.e. free + reserved or only free?
         free = accountBalanceInfo['data']['free']
         reserved = accountBalanceInfo['data']['reserved']
