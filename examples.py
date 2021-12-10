@@ -2,7 +2,7 @@
 # stake dot
 exampleAccount = """
 Description
-  Accounting interface to Polkadot..
+  Account interface to Polkadot..
 
 example:
   python %(prog)s create -h
@@ -49,9 +49,8 @@ You need to bond you dot coin before you can use nominate option.
 python stake dot bounder -h for more information
 
 example:
-    python %(prog)s -s/--seed "MNEMONIC_PHRASE"
-    python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address "VALIDATOR_ADDRESS"
-    python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address "VALIDATOR_ADDRESS_1","VALIDATOR_ADDRESS_2","VALIDATOR_ADDRESS_N"
+    python %(prog)s -h
+
     """
 # nominate
 exampleNominate = """
@@ -59,17 +58,26 @@ description :
   nominate dot coin
 
 example:
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS \n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS_1,VALIDATOR_ADDRESS_2,VALIDATOR_ADDRESS_N \n
+  python %(prog)s nominate -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS \n
+  python %(prog)s nominate -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS_1,VALIDATOR_ADDRESS_2,VALIDATOR_ADDRESS_N \n
     """
-# unnominate
-exampleUnominate = """
+# unnominate_tmp
+exampleUnominateTmp = """
 description : 
-  unnominate dot coin
+  temporarily pause active engagement in staking but does not  unbond funds
 
 example:
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS \n
-  python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS_1,VALIDATOR_ADDRESS_2,VALIDATOR_ADDRESS_N \n
+  python %(prog)s unnominate_tmp -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS \n
+  python %(prog)s unnominate_tmp -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS_1,VALIDATOR_ADDRESS_2,VALIDATOR_ADDRESS_N \n
+    """
+# unnominate_all
+exampleUnominateAll = """
+description : 
+  stop active engagement in staking and unbond funds
+
+example:
+  python %(prog)s unnominate_all -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS \n
+  python %(prog)s unnominate_all -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS_1,VALIDATOR_ADDRESS_2,VALIDATOR_ADDRESS_N \n
     """
 # bounder --------------------------------------------------------------------------------------------------------------
 exampleBounder = """

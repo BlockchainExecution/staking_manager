@@ -32,8 +32,13 @@ def subcommand(parent, subHelp="", epilog="", reqArgs=None, optArgs=None):
     return decorator
 
 
-def actionSeed():
-    return argument('-s', '--seed',
+def actionNumSlashingSpans():
+    return argument('-nss', '--num_slashing_spans', help="?", default=0,
+                    required=False, type=int)
+
+
+def actionMnemonic():
+    return argument('-m', '--mnemonic',
                     help='mnemonic phrase is a group words, often 12 or more,\ncreated when a new wallet is made.\n''to store your cryptocurrency.\n\n',
                     required=True)
 

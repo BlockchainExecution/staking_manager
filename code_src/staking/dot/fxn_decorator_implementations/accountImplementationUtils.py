@@ -2,11 +2,13 @@ import json
 import sys
 from bip39 import bip39_validate
 # TODO: can you confirm the below github for the substrateinterface library?
-from substrateinterface import Keypair # github: https://github.com/polkascan/py-substrate-interface
+from substrateinterface import Keypair  # github: https://github.com/polkascan/py-substrate-interface
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
-# DO NOT import accountImplementation, dependencies cannot be circular, must be 1 direction, 
+
+
+# DO NOT import accountImplementation, dependencies cannot be circular, must be 1 direction,
 # If you feel a "need" to import accountImplementation.py, don't, fix the code instead 
 
 class MnemonicImplementation:
@@ -16,6 +18,7 @@ class MnemonicImplementation:
     * This class is intentionally separate from AccountImplementation as there may be times
     when features of mnemonics should be added/changed without concerning AccountImplementation
     """
+
     def __init__(self, logger):
         self.logger = logger
 
@@ -36,10 +39,12 @@ class MnemonicImplementation:
             self.logger.critical(f"error : {e}")
             return False
 
+
 class KeyPairImplementation:
     """
     Class creates a keypair
     """
+
     def __init__(self, logger, mnemonic):
         self.logger = logger
         self.mnemonic = mnemonic
@@ -58,9 +63,9 @@ class KeyPairImplementation:
 
         # If a mnemonic is not passed in, the default in the above library will be used
         # however, we will enforce that "something" is passed in to avoid the default (len 10 is arbitrary)
-        if (len(self.mnemonic) < 10):
-                logger.critical("A bad mnemonic as been passed to create the keypair")
-                return False
+        if (len(self.mnemonic.split(' ')) < 10):
+            self.logger.critical("A bad mnemonic as been passed to create the keypair")
+            return False
 
         try:
             # Keypair ~ https://github.com/polkascan/py-substrate-interface#keypair-creation-and-signing
@@ -107,3 +112,42 @@ class KeyPairImplementation:
                 elif lengthWordInMnemonic or not bip39_validate(self.mnemonic):
                     self.logger.critical("Please check for messing strings.")
                     return False
+
+
+class AccountBalanceForBonding:
+    """
+    Class is to return balance of bonding - verifications
+    TODO: Better explanation
+    # TODO:
+    # * Ideally keep in Utils file instead of here, but need to refactor
+    # to prevent importing accountImplementation.py in Utils
+    """
+
+    def __init__(self, logger, ss58_address):
+        self.logger = logger
+        self.ss58_address = ss58_address
+
+    def __call__(self):
+        return self.getAccountBalanceForBonding()
+
+    def getAccountBalanceForBonding(self):
+        # query balance info for an account
+        accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
+                                                                params=[self.ss58_address]).value
+
+        # In general, the usable balance of the account is the amount that is free minus any funds that are considered
+        # frozen (either misc_frozen or fee_frozen) and depend on the reason for which the funds are to be used.
+        # If the funds are to be used for transfers, then the usable amount is the free amount minus
+        # any misc_frozen funds. However, if the funds are to be used to pay transaction fees,
+        # the usable amount would be the free funds minus fee_frozen.
+        # explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
+        # TODO: decide what the account balance calculation "should" be, i.e. free + reserved or only free?
+        free = accountBalanceInfo['data']['free']
+        reserved = accountBalanceInfo['data']['reserved']
+        misc_frozen = accountBalanceInfo['data']['misc_frozen']
+        totalUsable = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
+
+        # free, reserved and misc_frozen are given as uint quantity; convert to float
+        totalAccountBalance = totalUsable - misc_frozen / activeConfig.coinDecimalPlaces
+
+        return totalAccountBalance
