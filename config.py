@@ -1,4 +1,5 @@
 from substrateinterface import SubstrateInterface
+import json
 
 
 # websockets ---------------------------------------
@@ -50,6 +51,47 @@ def substrateWestend():
 westendValidator = ["5C556QTtg1bJ43GDSgeowa3Ark6aeSHGTac1b2rKSXtgmSmW"]
 binanceValidator = ["114SUbKCXjmb9czpWTtS3JANSmNRwVa4mmsMrWYpRG1kDH5"]
 
+# staking errors mapper
+dotModulesErrors = json.loads("""{
+  "6": {
+    "0": "NotController Not a controller account.",
+    "1": "NotStash Not a stash account.",
+    "2": "AlreadyBonded Stash is already bonded.If you want to bond more coins you can use <bondextra> command line utilities",
+    "3": "AlreadyPaired Controller is already paired.",
+    "4": "EmptyTargets Targets cannot be empty.",
+    "5": "DuplicateIndex Duplicate index.",
+    "6": "InvalidSlashIndex Slash record index out of bounds.",
+    "7": "InsufficientValue Can not bond with value less than minimum balance.",
+    "8": "NoMoreChunks Can not schedule more unlock chunks.",
+    "9": "NoUnlockChunk Can not rebond without unlocking chunks.",
+    "10": "FundedTarget Attempting to target a stash that still has funds.",
+    "1&": "InvalidEraToReward Invalid era to reward.",
+    "12": "InvalidNumberOfNominations Invalid number of nominations.",
+    "13": "NotSortedAndUnique Items are not sorted and unique.",
+    "14": "AlreadyClaimed Rewards for this era have already been claimed for this validator.",
+    "15": "OffchainElectionEarlySubmission The submitted result is received out of the open window.",
+    "16": "OffchainElectionWeakSubmission The submitted result is not as good as the one stored on chain.",
+    "17": "SnapshotUnavailable The snapshot data of the current window is missing.",
+    "18": "OffchainElectionBogusWinnerCount Incorrect number of winners were presented.",
+    "19": "OffchainElectionBogusWinner One of the submitted winners is not an active candidate on chain (index is out of range in snapshot).",
+    "20": "OffchainElectionBogusCompact Error while building the assignment type from the compact. This can happen if an index is invalid, or if the weights overflow.",
+    "21": "OffchainElectionBogusNominator One of the submitted nominators is not an active nominator on chain.",
+    "22": "OffchainElectionBogusNomination One of the submitted nominators has an edge to which they have not voted on chain.",
+    "23": "OffchainElectionSlashedNomination One of the submitted nominators has an edge which is submitted before the last non-zero slash of the target.",
+    "24": "OffchainElectionBogusSelfVote A self vote must only be originated from a validator to ONLY themselves.",
+    "25": "OffchainElectionBogusEdge The submitted result has unknown edges that are not among the presented winners.",
+    "26": "OffchainElectionBogusScore The claimed score does not match with the one computed from the data.",
+    "27": "OffchainElectionBogusElectionSize The election size is invalid.",
+    "28": "CallNotAllowed The call is not allowed at the given time due to restrictions of election period.",
+    "29": "IncorrectHistoryDepth Incorrect previous history depth input provided.",
+    "30": "IncorrectSlashingSpans Incorrect number of slashing spans provided."
+  },
+ "System": {
+  "0" : ""
+ }
+}""")
+
+
 # There is also a maximum of 22,500 nominators in place at the moment. That means,
 # if there are already 22,500 nominators, you will not be able to nominate,
 # even if you have more than the minimum of 120 DOT staked.
@@ -79,7 +121,7 @@ class TestingConfig:
     coinDecimalPlacesLength = 12
     coinName = "WND"
     stakeMinimumAmount = 1
-    existentialDeposit = 1
+    existentialDeposit = 0
 
 
 activeConfig = TestingConfig

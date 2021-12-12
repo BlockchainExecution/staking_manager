@@ -150,7 +150,8 @@ def bounderArgParser(parent_parser):
     """
 
     @subcommand(parent=bounderSubParser,
-                subHelp="Remove any unlocked chunks from the `unlocking` queue. This essentially frees up that balance to be used by the stash account to do whatever it wants.",
+                subHelp="Remove any unlocked chunks from the `unlocking` queue. This essentially frees up that balance "
+                        "to be used by the stash account to do whatever it wants.",
                 epilog=exampleWithdrawUnBonded, reqArgs=[actionMnemonic(), actionNumSlashingSpans()],
                 optArgs=[actionHelp()])
     def withdrawunbonded(args):
