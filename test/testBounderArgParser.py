@@ -56,7 +56,7 @@ class BounderTest(unittest.TestCase):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_bond_success ", "dot", "bounder", "bond",
                                           "-m", mnemonic, "-ca", account, "-nt", "1")
         self.assertTrue(
-            "The tx is already in pool. Either try on a different node, or wait to see if the initial transaction goes through" in stdIn)
+            "AlreadyBonded Stash is already bonded.If you want to bond more coins you can use <bondextra> command line utilities" in stdIn)
 
     # unbond
     def test_unbond_without_args(self):

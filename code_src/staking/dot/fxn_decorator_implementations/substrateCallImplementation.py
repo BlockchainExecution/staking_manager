@@ -1,5 +1,7 @@
 from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementationUtils import *
 from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import *
+from substrateinterface import ExtrinsicReceipt
+from config import dotModulesErrors
 
 
 # https://docs.rs/pallet-staking/latest/pallet_staking/enum.Call.html#variant.chill
@@ -19,6 +21,26 @@ class DotSubstrateCall:
         self.logger = myLogger(cli_name)
         self.logger.info("Start %s Program." % cli_name)
 
+    @staticmethod
+    def errorHandler(extrinsic_hash, block_hash, logger):
+        errors = set()
+        receipt = ExtrinsicReceipt(
+            substrate=activeConfig.activeSubstrate,
+            extrinsic_hash=extrinsic_hash,
+            block_hash=block_hash
+        )
+        for event in receipt.triggered_events:
+
+            eventValue = event.value
+            if eventValue['event']['event_id'] == "ExtrinsicFailed":
+                errorModule = eventValue['attributes'][0]['Module']
+                errorModuleIndex = errorModule[0]
+                errorModuleMessageIndex = errorModule[1]
+                errors.add(dotModulesErrors[str(errorModuleIndex)][str(errorModuleMessageIndex)])
+
+        for err in errors:
+            logger.error(f"{err}")
+
     def call(self, call):
         """
         :param active_substrate: dot substrate to connect to
@@ -35,9 +57,11 @@ class DotSubstrateCall:
         try:
             receipt = activeConfig.activeSubstrate.submit_extrinsic(extrinsic, wait_for_inclusion=True)
 
-            print(receipt.finalized)
-            self.logger.info(
-                "Extrinsic '{}' sent and included in block '{}'".format(receipt.extrinsic_hash, receipt.block_hash))
+            if receipt.is_success:
+                self.logger.info(
+                    "Extrinsic '{}' sent and included in block '{}'".format(receipt.extrinsic_hash, receipt.block_hash))
+            else:
+                self.errorHandler(receipt.extrinsic_hash, receipt.block_hash, self.logger)
 
         except SubstrateRequestException as e:
             arg = e.args[0]
@@ -55,8 +79,6 @@ class DotSubstrateCall:
 
     def __call__(self, func):
         self.logger.info("execute %s function." % func.__name__)
-        print(self.call_module, self.call_params, self.seed)
-
         if func.__name__ == "bond":
             bondValidator = BondingValidator(logger=self.logger, ss58_address=self.call_params['controller'],
                                              tokenNumber=self.call_params['value'])
@@ -82,7 +104,7 @@ class DotSubstrateCall:
                 call_function=f"{func.__name__}",
                 call_params=self.call_params
             )
-            self.call(call_chill)
+            # self.call(call_chill)
             self.call(call_bond)
 
             self.__exit__()
@@ -101,8 +123,6 @@ class DotSubstrateCall:
             self.__exit__()
 
         elif func.__name__ == "stake":
-            print(f"function {func.__name__}")
-            print(self.call_params)
             call_params_bond = {'controller': self.call_params['controller'],
                                 'value': self.call_params['value'],
                                 'payee': self.call_params['payee']}
@@ -138,8 +158,3 @@ class DotSubstrateCall:
         activeConfig.activeSubstrate.close()
         # exit system
         sys.exit(0)
-
-
-# helper print method for checking the code, can delete function and all references anytime
-def printTmp(printMe):
-    print("\n\n****************\n %s \n****************\n\n" % printMe)
