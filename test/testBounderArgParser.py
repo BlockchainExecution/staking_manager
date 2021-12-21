@@ -1,10 +1,14 @@
 import unittest
+
+# I need to run the below block to import utils
+import sys
+sys.path.append("../staking_manager")
+# --------
+
 from utils import get_project_root_dir, executeCliCommand
 import os
+from config import venv_env, main_script
 
-main_script = os.path.join(get_project_root_dir(), "StakingManager.py")
-# may need to refactor below line later and for different envs...
-venv_env = os.path.join(get_project_root_dir(), "venv\Scripts\python.exe")
 account = "5C7piVESupk6paengZYaGMzdU79YTgWKoafJPfE76pYkwdEM"
 mnemonic = "tomorrow pet when height sight target term flip deposit web moment wine"
 

@@ -1,4 +1,19 @@
 from substrateinterface import SubstrateInterface
+import os
+from utils import get_project_root_dir
+
+# execution environment (for testing) --------------
+main_script = os.path.join(get_project_root_dir(), "StakingManager.py")
+# to get your python env, execute "which python" in CLI with env activated
+# E.g. for anaconda read https://docs.anaconda.com/anaconda/user-guide/tasks/integration/python-path/
+
+"""
+ Lucas:
+ I put my env below, just comment it out and run yours. We'll put
+ everything in a docker container later to resolve this issue
+"""
+venv_env = "/Users/lucas/opt/anaconda3/envs/crypto_hedge_fund/bin/python"
+# venv_env = os.path.join(get_project_root_dir(), "venv\\Scripts\\python.exe")
 
 
 # websockets ---------------------------------------

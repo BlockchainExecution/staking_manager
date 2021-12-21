@@ -1,9 +1,13 @@
 import unittest
-from utils import get_project_root_dir, executeCliCommand
-import os
 
-main_script = os.path.join(get_project_root_dir(), "StakingManager.py")
-venv_env = os.path.join(get_project_root_dir(), "venv\Scripts\python.exe")
+# I need to run the below block to import utils
+import sys
+sys.path.append("../staking_manager")
+# --------
+
+from utils import get_project_root_dir, executeCliCommand, printTmp
+from config import venv_env, main_script
+
 account = "5C7piVESupk6paengZYaGMzdU79YTgWKoafJPfE76pYkwdEM"
 mnemonic = "tomorrow pet when height sight target term flip deposit web moment wine"
 mnemonic13 = "tomorrow pet when height sight target term flip deposit web moment wine gth"
@@ -17,6 +21,11 @@ class AccountTest(unittest.TestCase):
 
     def test_create(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_create ", "dot", "account", "create")
+        # print("stdIn is:\n")
+        # printTmp(stdIn)
+        # print("stdOut is:\n")
+        # print(type(sdtOut))
+        # print(sdtOut)
         self.assertTrue("<Keypair (address=" in stdIn)
 
     def test_info(self):
