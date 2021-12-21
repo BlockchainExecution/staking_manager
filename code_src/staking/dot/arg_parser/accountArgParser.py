@@ -1,8 +1,8 @@
 from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import DotAccountCall
 from common import MyHelpFormatter
 from examples import exampleCreateMnemonic, exampleCreateAccount, exampleAccountInfos, exampleCreateKeypair, \
-    exampleStaker
-from code_src.staking.dot.dotArgparserUtil import actionHelp, subcommand, actionSeed, actionControllerAddress
+    exampleAccount
+from code_src.staking.dot.dotArgparserUtil import actionHelp, subcommand, actionMnemonic, actionControllerAddress
 
 """
 TODO:
@@ -11,17 +11,17 @@ TODO:
 
 """
 
-def accountingArgParser(parent_parser):
+def accountArgParser(parent_parser):
     # bounder parent parser
-    accountingDotParser = parent_parser.add_parser(name="accounting",
-                                                   help="accounting interface to DOT.",
-                                                   add_help=False, epilog=exampleStaker,
-                                                   formatter_class=MyHelpFormatter)
+    accountDotParser = parent_parser.add_parser(name="account",
+                                                help="account interface to DOT.",
+                                                add_help=False, epilog=exampleAccount,
+                                                formatter_class=MyHelpFormatter)
 
-    accountingDotSubParser = accountingDotParser.add_subparsers(help='')
+    accountDotSubParser = accountDotParser.add_subparsers(help='')
 
     # create mnemonic
-    @subcommand(parent=accountingDotSubParser, subHelp="create a mnemonic phrase.", epilog=exampleCreateMnemonic,
+    @subcommand(parent=accountDotSubParser, subHelp="create a mnemonic phrase.", epilog=exampleCreateMnemonic,
                 optArgs=[actionHelp()])
     def mnemonic(args):
         @DotAccountCall()
@@ -29,16 +29,16 @@ def accountingArgParser(parent_parser):
             pass
 
     # create_keypair
-    @subcommand(parent=accountingDotSubParser, subHelp="create a key pair from seed", epilog=exampleCreateKeypair,
-                reqArgs=[actionSeed()],
+    @subcommand(parent=accountDotSubParser, subHelp="create a key pair from seed", epilog=exampleCreateKeypair,
+                reqArgs=[actionMnemonic()],
                 optArgs=[actionHelp()])
     def keypair(args):
-        @DotAccountCall(mnemonic=args.seed)
+        @DotAccountCall(mnemonic=args.mnemonic)
         def keypair():
             pass
 
     # account_infos
-    @subcommand(parent=accountingDotSubParser, subHelp="get an account info.", epilog=exampleAccountInfos,
+    @subcommand(parent=accountDotSubParser, subHelp="get an account info.", epilog=exampleAccountInfos,
                 reqArgs=[actionControllerAddress()],
                 optArgs=[actionHelp()])
     def info(args):
@@ -47,11 +47,11 @@ def accountingArgParser(parent_parser):
             pass
 
     # create_account
-    @subcommand(parent=accountingDotSubParser, subHelp="create an account.", epilog=exampleCreateAccount,
+    @subcommand(parent=accountDotSubParser, subHelp="create an account.", epilog=exampleCreateAccount,
                 optArgs=[actionHelp()])
     def create(args):
         @DotAccountCall()
         def create():
             pass
 
-    return accountingDotParser
+    return accountDotParser

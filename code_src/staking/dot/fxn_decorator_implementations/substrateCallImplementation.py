@@ -1,11 +1,3 @@
-import json
-import sys
-from bip39 import bip39_validate
-# TODO: can you confirm the below github for the substrateinterface library?
-from substrateinterface import Keypair # github: https://github.com/polkascan/py-substrate-interface
-from substrateinterface.exceptions import SubstrateRequestException
-from config import activeConfig
-from Logger import myLogger
 from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementationUtils import *
 from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import *
 
@@ -18,6 +10,7 @@ class DotSubstrateCall:
     * Some calls in nominatorArgParser.py (nominate, unnominate)
     * 1 call in stakerArgParser (staker)
     """
+
     def __init__(self, cli_name, call_module, call_params, seed):
         self.call_module = call_module
         self.call_params = call_params
@@ -30,8 +23,12 @@ class DotSubstrateCall:
         print(self.call_module, self.call_params, self.seed)
 
         if func.__name__ == "bond":
-            bondValidator = bondingValidator(logger=self.logger, ss58_address=self.call_params['controller'], tokenNumber=self.call_params['value'])
+            bondValidator = BondingValidator(logger=self.logger, ss58_address=self.call_params['controller'],
+                                             tokenNumber=self.call_params['value'])
             bondValidator.validateAccountDataBeforeBonding()
+
+        if func.__name__ == "bond_extra":
+            self.call_params['max_additional'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
 
         try:
             self.call_params['value'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
@@ -51,7 +48,7 @@ class DotSubstrateCall:
         :return:
         """
 
-        #this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
+        # this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
         # TODO: should call AccountImplementation().createAccount() instead to keep everything needed in accountImplementation.py
         # this_keypair = KeyPairImplementation().getAddressFromMnemonic()
         this_address = AccountImplementation(logger=self.logger, mnemonic=self.seed).getAddressFromMnemonic()
@@ -72,7 +69,8 @@ class DotSubstrateCall:
         '_ExtrinsicReceipt__total_fee_amount': None
         }"""
         try:
-            receipt = activeConfig.activeSubstrate.submit_extrinsic(extrinsic, wait_for_inclusion=True)
+            receipt = activeConfig.activeSubstrate.submit_extrinsic(extrinsic, wait_for_inclusion=True,
+                                                                    wait_for_finalization=True)
 
             print(receipt.finalized)
             self.logger.info(
