@@ -131,6 +131,11 @@ class AccountBalanceForBonding:
         return self.getAccountBalanceForBonding()
 
     def getAccountBalanceForBonding(self):
+        """
+        This function should return only the funds which can be safely bonded 
+        and not the "whole" account balance
+        """
+
         # query balance info for an account
         accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
                                                                 params=[self.ss58_address]).value
