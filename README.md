@@ -21,11 +21,14 @@ run `python StakingManager.py dot -h`
 * Most "unique" logic is in fxn_decorator_implementations folder
 * config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
-    - SubstrateInterface (py): https://github.com/polkascan/py-substrate-interface
-    - https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
-
-### Architecture:
-* TODO
+    - SubstrateInterface (py):
+        + Github: https://github.com/polkascan/py-substrate-interface
+        + Documentation: https://polkascan.github.io/py-substrate-interface/
+    - SS58:
+        + Github: https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
+    - TODO: Testing Tools:
+        + https://github.com/wpank/polkadot-local-network
+        + https://github.com/w3f/1k-validators-be/blob/master/src/misc/testSetup.ts
 
 ### Coding Patterns (Ideals):
 * SOLID - https://gist.github.com/dmmeteo/f630fa04c7a79d3c132b9e9e5d037bfd
@@ -37,8 +40,8 @@ Instead, all other files should only ever have to import accountManager.py.
 
 
 #### Immediate TODOs:
-* Improved testing
-* Improved validations and error handling, e.g. to avoid existential deposit
+* Add local network docker deployment for better testing
 * Adding new substrate based chains to stake on
 * check TODOs in substrateCallImplementationUtils
-
+* rename all cases of "bounder" to "bonder"
+* rename code_src > src
