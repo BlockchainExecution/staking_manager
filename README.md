@@ -45,7 +45,7 @@ run `python test/endToEndTests.py`
     - For example, accountManager.py should import accountManagerUtils.py, but no other files should import accountManagerUtils.py.
 Instead, all other files should only ever have to import accountManager.py.
 * Pass "generic" arguements first in a function and more unique arguements subsequently
-    - For example, in `def __init__(self, logger, accountManager)`, `self` and `logic` generic and therefore passed before `accountManager`
+    - For example, in `def __init__(self, logger, accountManager)`, `self` and `logic` are generic and therefore passed before `accountManager`
 
 ### Architecture:
 * TODO
