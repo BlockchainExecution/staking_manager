@@ -71,7 +71,7 @@ example:
   python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS \n
   python %(prog)s -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS_1,VALIDATOR_ADDRESS_2,VALIDATOR_ADDRESS_N \n
     """
-# bounder --------------------------------------------------------------------------------------------------------------
+# bonder --------------------------------------------------------------------------------------------------------------
 exampleBounder = """
 description : 
   bounder interface.

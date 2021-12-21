@@ -10,8 +10,6 @@ import bip39
 # import specific project files
 # don't import AccountImplementation (class)
 # from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import DotAccountCall
-import tempHelperTestFile
-
 
 # __name = "StakingManager TESTS"
 # logger = myLogger(__name)
@@ -62,9 +60,6 @@ if __name__ == "__main__":
 	import sys
 	printMe = sys.argv[1:]
 	printTmp("Command is: %s" %printMe)
-
-	# tempHelperTestFile.main() ~ does not call main, AttributeError, would need to change StakingManager
-	#execfile('file.py')
 
 	"""
 	Testing the accounting commands
@@ -240,4 +235,68 @@ if __name__ == "__main__":
 	"""
 	Testing the bonding commands
 	"""
+
+
+	"""
+	Test 5: Bonding command > bond
+	"""
+
+	def generateCliDotBondingCommand(cmd: list) -> list:
+	argList = ['StakingManager.py', 'dot', 'bounder']
+	argList = argList + cmd
+	command = ['python'] + argList
+	return command
+
+	bondCmd = generateCliDotAccountingCommand(["bond"])
+	bondCmdOutput = executeCliCommand(bondCmd)
+
+	def validateTest5(infoCmdOutput):
+		# # match free : 0.314159
+		# teststring = re.search("(mnemonic :)((\\s\\w+){12,24})", infoCmdOutput)
+
+		# # get the relevant string from Match object (returned by re)
+		# if (teststring):
+		# 	teststring = teststring.group()
+		# 	testValue = teststring[:11]
+		# 	return testValue
+		# else:
+		# 	printTmp("TEST 2 FAILED")
+		# 	return False
+
+	testValue = validateTest5(bondCmdOutput)
+
+	# TODO: need a much better way to check mnemonic correctness
+	if(testValue == "mnemonic : "):
+		printTmp("TEST 5 PASSED")
+	else:
+		printTmp("TEST 5 FAILED")
+
+
+	"""
+	Test 6: Bonding command > unbond
+	"""
+
+
+
+
+	"""
+	Test 7: Bonding command > rebond
+	"""
+
+
+
+
+	"""
+	Test 8: Bonding command > bondextra
+	"""
+
+
+
+
+	"""
+	Test 9: Bonding command > withdrawunbonded
+	"""
+
+
+
 

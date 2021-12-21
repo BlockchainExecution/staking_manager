@@ -57,7 +57,8 @@ binanceValidator = ["114SUbKCXjmb9czpWTtS3JANSmNRwVa4mmsMrWYpRG1kDH5"]
 # on https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.pinknode.io%2Fpolkadot%2Fexplorer#/staking
 # TODO a function that check number of active nominator if the value > 22500 return False (no place to nominate) else True
 # configs
-# TODO `value` must be more than the `minimum_balance` specified by`T::Currency`. how to use substrate to fetch this information
+# TODO: `value` must be more than the `minimum_balance` specified by`T::Currency`. how to use substrate to fetch this information
+# TODO: get the hardcoded values (e.g. stakeMinAmount) from https://polkadot.js.org/
 class ProductionConfig:
     activeSubstrate = substratePolkadot()
     activeValidator = binanceValidator
@@ -66,6 +67,7 @@ class ProductionConfig:
     coinDecimalPlacesLength = 10
     coinName = "DOT"
     # Nominating currently requires a minimum of 120 DOT staked funds on Polkadot
+    # ref: https://wiki.polkadot.network/docs/learn-nominator#required-minimum-stake
     stakeMinimumAmount = 120
     # On the Polkadot network, an address is only active when it holds a minimum amount, currently set at 1 DOT
     existentialDeposit = 1
