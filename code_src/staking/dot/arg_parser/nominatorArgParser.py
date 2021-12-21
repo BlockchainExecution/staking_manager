@@ -1,8 +1,7 @@
 from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementation import DotSubstrateCall
-
 from common import MyHelpFormatter
-from code_src.staking.dot.dotArgparserUtil import actionSeed, actionValidatorAddress, actionHelp, subcommand, actionTest
-from Logger import myLogger
+from code_src.staking.dot.dotArgparserUtil import actionMnemonic, actionValidatorAddress, actionHelp, subcommand, \
+    actionTest
 from examples import exampleNominator, exampleNominate, exampleUnominate
 
 
@@ -28,24 +27,19 @@ def nominatorArgParser(parser_parent):
     'module_prefix': 'Staking', 'module_name': 'Staking', 'spec_version': 9122}
     :return:
     """
-    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionSeed()],
+
+    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionMnemonic()],
                 optArgs=[actionValidatorAddress(), actionHelp()])
     def nominate(args):
-        seed = args.seed
-        validator_address = args.validator_address
-
-        @DotSubstrateCall(cli_name="Nominator", call_module="Staking", call_params={'targets': validator_address},
-                          seed=seed)
+        @DotSubstrateCall(cli_name="Nominator", call_module="Staking", call_params={'targets': args.validator_address},
+                          seed=args.mnemonic)
         def nominate():
             pass
 
-    @subcommand(parent=nominatorSubParser, subHelp=exampleUnominate, reqArgs=[actionSeed()], optArgs=[actionTest()])
+    @subcommand(parent=nominatorSubParser, subHelp=exampleUnominate, reqArgs=[actionMnemonic()], optArgs=[actionTest()])
     def unnominate(args):
-        myLogger('unnominate').info(args.seed)
-        seed = args.seed
-
-        @DotSubstrateCall(cli_name="unnnominate", call_module="Staking", call_params={}, seed=seed)
-        def unnnominate():
+        @DotSubstrateCall(cli_name="unnominate", call_module="Staking", call_params={}, seed=args.mnemonic)
+        def unnominate():
             pass
 
     return nominatorParser

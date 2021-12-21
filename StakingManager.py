@@ -1,5 +1,5 @@
 import argparse
-from code_src.staking.dot.arg_parser.accountingArgParser import accountingArgParser
+from code_src.staking.dot.arg_parser.accountArgParser import accountArgParser
 from code_src.staking.dot.arg_parser.beforeIStartArgParser import beforeIStartArgParser
 from code_src.staking.dot.arg_parser.nominatorArgParser import nominatorArgParser
 from code_src.staking.dot.arg_parser.bounderArgParser import bounderArgParser
@@ -56,7 +56,7 @@ dotParentParser = stakeCoinSubParsers.add_parser(name='dot', help='Polkadot stak
 #
 # dot
 dotSubParser = dotParentParser.add_subparsers(dest="dot", help='Available dot staking commands')
-accounting = accountingArgParser(dotSubParser)
+account = accountArgParser(dotSubParser)
 staker = stakeDotArgParser(dotSubParser)
 nominator = nominatorArgParser(dotSubParser)
 bounder = bounderArgParser(dotSubParser)
@@ -94,12 +94,12 @@ if __name__ == "__main__":
                         bounder.print_help()
 
                 # accounting
-                elif dot == "accounting":
+                elif dot == "account":
                     try:
                         # print(args)
                         args.func(args)
                     except AttributeError:
-                        accounting.print_help()
+                        account.print_help()
                 # TODO
                 elif dot == "validator":
                     pass
