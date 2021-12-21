@@ -137,13 +137,11 @@ class AccountBalanceForBonding:
 
         # we only need free and reserved information from the balance info
         # free and reserved explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
-        # TODO: decide what the account balance calculation "should" be, i.e. free + reserved or only free?
+        # decided not to include 'reserve' in balance calculation
         free = accountBalanceInfo['data']['free']
-        reserved = accountBalanceInfo['data']['reserved']
         misc_frozen = accountBalanceInfo['data']['misc_frozen']
-        totalUsable = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
 
         # free, reserved and misc_frozen are given as uint quantity; convert to float
-        totalAccountBalance = totalUsable - misc_frozen / activeConfig.coinDecimalPlaces
+        totalAccountBalance = free / activeConfig.coinDecimalPlaces - misc_frozen / activeConfig.coinDecimalPlaces
 
         return totalAccountBalance
