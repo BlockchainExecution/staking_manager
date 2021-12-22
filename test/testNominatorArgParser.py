@@ -27,7 +27,7 @@ class BounderTest(unittest.TestCase):
     def test_stop_nominate_tmp_without_args(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_unnominate_tmp_without_args ", "dot",
                                           "nominator",
-                                          "unnominate_tmp")
+                                          "stop_nominate_tmp")
         self.assertTrue(
             "error: the following arguments are required: -m/--mnemonic" in stdIn)
 
@@ -47,7 +47,7 @@ class BounderTest(unittest.TestCase):
 
     def test_stop_nominate_all_success(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_unnominate_all_success ", "dot", "nominator",
-                                          "stop_nominate_all", "-m", mnemonic)
+                                          "stop_nominate_all", "-m", mnemonic,"-nt","3")
         self.assertTrue(
             "sent and included in block" in stdIn)
 

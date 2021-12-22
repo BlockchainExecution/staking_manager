@@ -21,7 +21,6 @@ class AccountImplementation:
         self.ss58_address = ss58_address
 
     def createNewAccount(self):
-        # TODO: createAccount is not returning a json, is that a problem?
         # MnemonicImplementation is called here instead of self.createMnemonic() because it's better
         # for functions in the AccountImplementation class to directly call the implementation classes
         newMnemonic = MnemonicImplementation(self.logger).createMnemonic()

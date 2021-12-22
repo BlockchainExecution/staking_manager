@@ -80,9 +80,9 @@ example:
   python %(prog)s unnominate_all -s/--seed "MNEMONIC_PHRASE" -va/--validator_address VALIDATOR_ADDRESS_1,VALIDATOR_ADDRESS_2,VALIDATOR_ADDRESS_N \n
     """
 # bounder --------------------------------------------------------------------------------------------------------------
-exampleBounder = """
+exampleBonder = """
 description : 
-  bounder interface.
+  bonder interface.
 
 example:
   python %(prog)s bond -h

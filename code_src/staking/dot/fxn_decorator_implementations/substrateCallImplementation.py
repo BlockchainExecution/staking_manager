@@ -9,7 +9,7 @@ class DotSubstrateCall:
     """
     Generic class for executing calls to DOT network
     The following calls are made to this class:
-    * All calls in bounderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
+    * All calls in bonderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
     * Some calls in nominatorArgParser.py (nominate, unnominate)
     * 1 call in stakerArgParser (staker)
     """
@@ -86,6 +86,12 @@ class DotSubstrateCall:
 
         if func.__name__ == "bond_extra":
             self.call_params['max_additional'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
+            bondValidator = BondingValidator(logger=self.logger, ss58_address=self.call_params['controller'],
+                                             tokenNumber=self.call_params['max_additional'])
+
+            bondValidator.validateAccountDataBeforeBonding()
+
+            del self.call_params['controller']
 
         try:
             self.call_params['value'] = self.call_params['value'] * activeConfig.coinDecimalPlaces

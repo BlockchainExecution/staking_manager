@@ -121,7 +121,7 @@ class TestingConfig:
     coinDecimalPlacesLength = 12
     coinName = "WND"
     stakeMinimumAmount = 1
-    existentialDeposit = 0
+    existentialDeposit = 1
 
 
 activeConfig = TestingConfig

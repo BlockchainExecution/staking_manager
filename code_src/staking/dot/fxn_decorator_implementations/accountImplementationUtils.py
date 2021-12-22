@@ -1,8 +1,7 @@
 import json
 import sys
 from bip39 import bip39_validate
-# TODO: can you confirm the below github for the substrateinterface library?
-from substrateinterface import Keypair  # github: https://github.com/polkascan/py-substrate-interface
+from substrateinterface import Keypair
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
@@ -141,13 +140,14 @@ class AccountBalanceForBonding:
         # any misc_frozen funds. However, if the funds are to be used to pay transaction fees,
         # the usable amount would be the free funds minus fee_frozen.
         # explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
-        # TODO: decide what the account balance calculation "should" be, i.e. free + reserved or only free?
-        free = accountBalanceInfo['data']['free']
-        reserved = accountBalanceInfo['data']['reserved']
-        misc_frozen = accountBalanceInfo['data']['misc_frozen']
-        totalUsable = free / activeConfig.coinDecimalPlaces + reserved / activeConfig.coinDecimalPlaces
 
-        # free, reserved and misc_frozen are given as uint quantity; convert to float
-        totalAccountBalance = totalUsable - misc_frozen / activeConfig.coinDecimalPlaces
+        """
+        In this situation we are using send funds balance witch is free minus misc_frozen
+        """
+        free = accountBalanceInfo['data']['free']
+
+        # transferable balance
+        miscFrozen = accountBalanceInfo['data']['misc_frozen']
+        totalAccountBalance = (free - miscFrozen) / activeConfig.coinDecimalPlaces
 
         return totalAccountBalance
