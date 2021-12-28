@@ -7,17 +7,26 @@ run `python StakingManager.py dot -h`
     <br />- NOTE: because only polkadot is supported, you must give `dot` as the first argument.
     In the future, when we support additional networks, there will be other options to `dot`
 
+### Testing:
+run `python test/endToEndTests.py`
+
 ### Features:
 * Pretty intuitive ArgParser (see examples.py) for:
 	- Creating a mnemonic, keypair, getting acct info
 	- Bonding, unbonding, rebonding, withdrawing
 	- Nominating (Staking), setting staker requirements
-* Validations and error handling for staking:
+* Validations
 	- Keep-alive checks (existential deposit)
 	- https://wiki.polkadot.network/docs/maintain-errors
+* Error handling
+	- TODO
+* Tests
+	- e2e tests (inclusive of CLI commands) in `test/endToEndTests.py`
+	- Tests are major WIP, may fail and exit
+	- TODO: Setting up and testing on local network (see Testing Tools below)
 
 ### Codebase Notes:
-* StakingManager.py is the cli executed file
+* To run the program, execute StakingManager.py
 * Most "unique" logic is in fxn_decorator_implementations folder
 * config.py specifies the network (see bottom of config file), right now only Polkadot mainnet and Westend are really functional
 * Under the hood:
@@ -38,10 +47,18 @@ Instead, all other files should only ever have to import accountManager.py.
 * Pass "generic" arguements first in a function and more unique arguements subsequently
     - For example, in `def __init__(self, logger, accountManager)`, `self` and `logic` are generic and therefore passed before `accountManager`
 
+### Architecture:
+* TODO
+* Code for parsing CLI commands is in `/arg_parser` folder
+* The program "logic" is in `/fxn_decorator_implementations`
+   - accountImplementation contains classes related to accounts
+   - substrateCallImplementation contains classes related to bonding and nominating
 
 #### Immediate TODOs:
 * Add local network docker deployment for better testing
 * Adding new substrate based chains to stake on
 * check TODOs in substrateCallImplementationUtils
-* rename all cases of "bounder" to "bonder"
 * rename code_src > src
+
+
+

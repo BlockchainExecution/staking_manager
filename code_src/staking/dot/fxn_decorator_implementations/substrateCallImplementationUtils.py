@@ -1,5 +1,6 @@
 import sys
 from config import activeConfig
+from substrateinterface import Keypair
 from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import AccountImplementation
 
 
@@ -31,6 +32,8 @@ class BondingValidator:
             https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-
         """
 
+        self.validateDecimalPoint()
+
         # check the number of tokens to bond is above protocol min
         self.validateBondSize()
 
@@ -40,8 +43,6 @@ class BondingValidator:
         self.validateAcctBalanceForBonding()
 
         # TODO: check that controller address matches mnc
-
-        self.validateDecimalPoint()
 
     def validateDecimalPoint(self):
         # check decimal writing
@@ -70,18 +71,43 @@ class BondingValidator:
         # check requirements
         accountToVerify = AccountImplementation(self.logger, ss58_address=self.ss58_address)
         totalAccountBalance = accountToVerify.getAccountBalance("bonding")
+        transactionFees = TransactionFees(ss58_address=self.ss58_address, dest=activeConfig.activeValidator[0],
+                                          value=self.tokenNumber).estimateTxFees()
 
         # we need always to reserve existentialDeposit
-        if totalAccountBalance < (self.tokenNumber + activeConfig.existentialDeposit):
+        if totalAccountBalance < (self.tokenNumber + transactionFees + activeConfig.existentialDeposit):
+            tokenNumber = self.tokenNumber / activeConfig.coinDecimalPlaces
             self.logger.warning(
                 f"Low balance\n"
                 f"Actual balance is : {totalAccountBalance} {activeConfig.coinName}\n"
-                f"Requested amount : {self.tokenNumber} {activeConfig.coinName}\n"
+                f"Requested amount : {tokenNumber} {activeConfig.coinName}\n"
                 f"Your account needs to have a minimum of {activeConfig.existentialDeposit} "
-                f"{activeConfig.coinName} plus the requested amount and it does not.\nYou need at least: "
-                f"{activeConfig.existentialDeposit} + {self.tokenNumber} = {activeConfig.existentialDeposit + self.tokenNumber}, "
+                f"{activeConfig.coinName} plus the requested amount plus the transaction fees and it does not.\nYou need at least: "
+                f"{activeConfig.existentialDeposit} + {tokenNumber} + {transactionFees} = {activeConfig.existentialDeposit + tokenNumber + transactionFees}, "
                 f"but the account balance is only {totalAccountBalance}")
             sys.exit(0)
+
+
+class TransactionFees:
+    def __init__(self, ss58_address, dest, value):
+        self.ss58_address = ss58_address
+        self.dest = dest
+        self.value = value
+
+    def estimateTxFees(self):
+        keypair = Keypair(ss58_address=self.ss58_address)
+
+        call = activeConfig.activeSubstrate.compose_call(
+            call_module='Balances',
+            call_function='transfer',
+            call_params={
+                'dest': self.dest,
+                'value': self.value * activeConfig.coinDecimalPlaces
+            }
+        )
+        payment_info = activeConfig.activeSubstrate.get_payment_info(call=call, keypair=keypair)[
+                           'partialFee'] / activeConfig.coinDecimalPlaces
+        return payment_info
 
 
 # helper print method for checking the code, can delete function and all references anytime

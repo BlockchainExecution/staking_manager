@@ -1,5 +1,6 @@
 from code_src.staking.dot.dotArgparserUtil import actionHelp, subcommand
 from code_src.staking.dot.dotCmdDecorator import DotValidatorCall
+from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementation import DotSubstrateCall
 
 from examples import exampleStaker
 
@@ -12,6 +13,6 @@ def validatorDotArgParser(parent_parser):
                 epilog=exampleStaker, reqArgs=[],
                 optArgs=[actionHelp()])
     def validator(args):
-        @DotValidatorCall()
+        @DotSubstrateCall()
         def check():
             pass

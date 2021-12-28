@@ -1,4 +1,5 @@
 import os
+import sys
 from subprocess import Popen, PIPE, STDOUT
 
 
@@ -37,9 +38,21 @@ def executeCliCommand(venv_env, main_script, func, *args):
     cmdList = [venv_env, main_script]
     for arg in args:
         cmdList.append(arg)
-    # !! shell=False and set stderr=PIPE !!
-    p = Popen(cmdList, text=True, shell=False, stdin=PIPE, stdout=PIPE,
-              stderr=PIPE)
-    stdout, logOutput = p.communicate()
-    return logOutput, stdout # only logOutput is really important here
 
+    # Double check that this function actually works on mac and then delete below commented
+    #
+    # # !! shell=False and set stderr=PIPE !!
+    # p = Popen(cmdList, text=True, shell=False, stdin=PIPE, stdout=PIPE,
+    #           stderr=PIPE)
+    # stdout, logOutput = p.communicate()
+    # return logOutput, stdout # only logOutput is really important here
+
+    if sys.platform.lower().startswith("win"):
+        p = Popen(cmdList, text=True, shell=True, stdin=PIPE, stdout=PIPE,
+                  stderr=STDOUT)
+    else:
+        p = Popen(cmdList, text=True, stdin=PIPE, stdout=PIPE,
+                  stderr=STDOUT)
+    stdIn, sdtOut = p.communicate()
+    printTmp(f"{func} \n{stdIn}")
+    return stdIn, sdtOut

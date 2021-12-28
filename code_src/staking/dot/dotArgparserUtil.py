@@ -31,9 +31,11 @@ def subcommand(parent, subHelp="", epilog="", reqArgs=None, optArgs=None):
 
     return decorator
 
+
 def actionNumSlashingSpans():
     return argument('-nss', '--num_slashing_spans', help="?", default=0,
                     required=False, type=int)
+
 
 def actionMnemonic():
     return argument('-m', '--mnemonic',

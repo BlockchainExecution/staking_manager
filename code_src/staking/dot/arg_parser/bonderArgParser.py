@@ -3,15 +3,15 @@ from common import MyHelpFormatter
 from code_src.staking.dot.dotArgparserUtil import actionMnemonic, actionNumberOfTokens, actionControllerAddress, \
     actionRewardsDestination, \
     actionValidatorAddress, actionHelp, subcommand, actionNumSlashingSpans
-from examples import exampleBond, exampleBounder, exampleBoundExtra, exampleReBound, exampleWithdrawUnBonded
+from examples import exampleBond, exampleBonder, exampleBoundExtra, exampleReBound, exampleWithdrawUnBonded
 
 
-def bounderArgParser(parent_parser):
-    # bounder
-    # bounder parent parser
-    bounderParser = parent_parser.add_parser("bounder", help="bond interface to DOT.", epilog=exampleBounder,
+def bonderArgParser(parent_parser):
+    # bonder
+    # bonder parent parser
+    bonderParser = parent_parser.add_parser("bonder", help="bond interface to DOT.", epilog=exampleBonder,
                                              formatter_class=MyHelpFormatter)
-    bounderSubParser = bounderParser.add_subparsers(help='')
+    bonderSubParser = bonderParser.add_subparsers(help='')
 
     # bond
     """
@@ -35,12 +35,12 @@ def bounderArgParser(parent_parser):
     :return:
     """
 
-    @subcommand(parent=bounderSubParser,
+    @subcommand(parent=bonderSubParser,
                 subHelp="Take the origin account as a stash and lock up `value` of its balance. `controller` will be the account that controls it.",
                 epilog=exampleBond, reqArgs=[actionMnemonic(), actionControllerAddress(), actionNumberOfTokens()],
                 optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
     def bond(args):
-        @DotSubstrateCall(cli_name="Bounder", call_module="Staking",
+        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
                           call_params={'controller': args.controller_address, 'value': args.number_of_tokens,
                                        'payee': args.rewards_destination}, seed=args.mnemonic)
         def bond():
@@ -66,12 +66,12 @@ def bounderArgParser(parent_parser):
     :return:
     """
 
-    @subcommand(parent=bounderSubParser,
+    @subcommand(parent=bonderSubParser,
                 subHelp="Schedule a portion of the stash to be unlocked ready for transfer out after the bond period ends.",
                 epilog=exampleBond, reqArgs=[actionMnemonic(), actionNumberOfTokens()],
                 optArgs=[actionHelp()])
     def unbond(args):
-        @DotSubstrateCall(cli_name="Bounder", call_module="Staking",
+        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
                           call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
         def unbond():
             """
@@ -96,12 +96,12 @@ def bounderArgParser(parent_parser):
     :return:
     """
 
-    @subcommand(parent=bounderSubParser,
+    @subcommand(parent=bonderSubParser,
                 subHelp="Rebond a portion of the stash scheduled to be unlocked.",
                 epilog=exampleReBound, reqArgs=[actionMnemonic(), actionNumberOfTokens()],
                 optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
     def rebond(args):
-        @DotSubstrateCall(cli_name="Bounder", call_module="Staking",
+        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
                           call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
         def rebond():
             pass
@@ -121,13 +121,14 @@ def bounderArgParser(parent_parser):
     :return:
     """
 
-    @subcommand(parent=bounderSubParser,
+    @subcommand(parent=bonderSubParser,
                 subHelp="Add some extra amount that have appeared in the stash `free_balance` into the balance up for staking.",
-                epilog=exampleBoundExtra, reqArgs=[actionMnemonic(), actionNumberOfTokens()],
+                epilog=exampleBoundExtra, reqArgs=[actionMnemonic(), actionControllerAddress(), actionNumberOfTokens()],
                 optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
     def bondextra(args):
-        @DotSubstrateCall(cli_name="Bounder", call_module="Staking",
-                          call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
+        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
+                          call_params={'value': args.number_of_tokens, 'controller': args.controller_address},
+                          seed=args.mnemonic)
         def bond_extra():
             pass
 
@@ -149,14 +150,15 @@ def bounderArgParser(parent_parser):
     :return:
     """
 
-    @subcommand(parent=bounderSubParser,
-                subHelp="Remove any unlocked chunks from the `unlocking` queue. This essentially frees up that balance to be used by the stash account to do whatever it wants.",
+    @subcommand(parent=bonderSubParser,
+                subHelp="Remove any unlocked chunks from the `unlocking` queue. This essentially frees up that balance "
+                        "to be used by the stash account to do whatever it wants.",
                 epilog=exampleWithdrawUnBonded, reqArgs=[actionMnemonic(), actionNumSlashingSpans()],
                 optArgs=[actionHelp()])
     def withdrawunbonded(args):
-        @DotSubstrateCall(cli_name="Bounder", call_module="Staking",
+        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
                           call_params={'num_slashing_spans': args.num_slashing_spans}, seed=args.mnemonic)
         def withdraw_unbonded():
             pass
 
-    return bounderParser
+    return bonderParser

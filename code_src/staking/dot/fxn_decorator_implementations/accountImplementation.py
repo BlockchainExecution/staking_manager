@@ -49,6 +49,9 @@ class AccountImplementation:
         return address
 
     def getAllAccountInfo(self):
+        """
+        The purpose of this function is to get an account info for a specific address.
+        """
         try:
             value = activeConfig.activeSubstrate.query('System', 'Account', params=[self.ss58_address]).value
             fee_frozen = int(value['data']['fee_frozen']) / activeConfig.coinDecimalPlaces
@@ -72,7 +75,7 @@ class AccountImplementation:
 
     def getAccountBalance(self, purpose=None):
         """
-        TODO: Document
+        The purpose of this function is to get an account address balance.
         """
         if purpose is None:
             # TODO: improve this to return dictionary with account values

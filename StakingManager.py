@@ -2,7 +2,7 @@ import argparse
 from code_src.staking.dot.arg_parser.accountArgParser import accountArgParser
 from code_src.staking.dot.arg_parser.beforeIStartArgParser import beforeIStartArgParser
 from code_src.staking.dot.arg_parser.nominatorArgParser import nominatorArgParser
-from code_src.staking.dot.arg_parser.bounderArgParser import bounderArgParser
+from code_src.staking.dot.arg_parser.bonderArgParser import bonderArgParser
 from code_src.staking.dot.arg_parser.stakerArgParser import stakeDotArgParser
 from Logger import myLogger
 from code_src.staking.dot.arg_parser.validatorArgParser import validatorDotArgParser
@@ -59,7 +59,7 @@ dotSubParser = dotParentParser.add_subparsers(dest="dot", help='Available dot st
 account = accountArgParser(dotSubParser)
 staker = stakeDotArgParser(dotSubParser)
 nominator = nominatorArgParser(dotSubParser)
-bounder = bounderArgParser(dotSubParser)
+bounder = bonderArgParser(dotSubParser)
 validator = validatorDotArgParser(dotSubParser)
 guide = beforeIStartArgParser(dotSubParser)
 # xtz
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         if 'dot' in var_args:
             dot = var_args['dot']
             if dot:
-                if dot == "staker":
+                if dot == "stake":
                     args.func(args)
 
                 # nominator
@@ -86,7 +86,7 @@ if __name__ == "__main__":
                     except AttributeError:
                         nominator.print_help()
                 # bounder
-                elif dot == "bounder":
+                elif dot == "bonder":
 
                     try:
                         args.func(args)

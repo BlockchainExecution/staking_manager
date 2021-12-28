@@ -1,8 +1,7 @@
 import json
 import sys
 from bip39 import bip39_validate
-# TODO: can you confirm the below github for the substrateinterface library?
-from substrateinterface import Keypair  # github: https://github.com/polkascan/py-substrate-interface
+from substrateinterface import Keypair
 from substrateinterface.exceptions import SubstrateRequestException
 from config import activeConfig
 from Logger import myLogger
@@ -140,13 +139,20 @@ class AccountBalanceForBonding:
         accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
                                                                 params=[self.ss58_address]).value
 
-        # we only need free and reserved information from the balance info
-        # free and reserved explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
-        # decided not to include 'reserve' in balance calculation
-        free = accountBalanceInfo['data']['free']
-        misc_frozen = accountBalanceInfo['data']['misc_frozen']
+        # In general, the usable balance of the account is the amount that is free minus any funds that are considered
+        # frozen (either misc_frozen or fee_frozen) and depend on the reason for which the funds are to be used.
+        # If the funds are to be used for transfers, then the usable amount is the free amount minus
+        # any misc_frozen funds. However, if the funds are to be used to pay transaction fees,
+        # the usable amount would be the free funds minus fee_frozen.
+        # explained: https://wiki.polkadot.network/docs/learn-accounts#balance-types
 
-        # free, reserved and misc_frozen are given as uint quantity; convert to float
-        totalAccountBalance = free / activeConfig.coinDecimalPlaces - misc_frozen / activeConfig.coinDecimalPlaces
+        """
+        In this situation we are using send funds balance witch is free minus misc_frozen
+        """
+        free = accountBalanceInfo['data']['free']
+
+        # transferable balance
+        miscFrozen = accountBalanceInfo['data']['misc_frozen']
+        totalAccountBalance = (free - miscFrozen) / activeConfig.coinDecimalPlaces
 
         return totalAccountBalance
