@@ -25,6 +25,10 @@ run `python test/endToEndTests.py`
 	- Tests are major WIP, may fail and exit
 	- TODO: Setting up and testing on local network (see Testing Tools below)
 
+### Recommended Reading
+* DOT (and KSM): https://wiki.polkadot.network/docs/learn-nominator
+
+
 ### Codebase Notes:
 * To run the program, execute StakingManager.py
 * Most "unique" logic is in fxn_decorator_implementations folder
@@ -53,6 +57,7 @@ Instead, all other files should only ever have to import accountManager.py.
 * The program "logic" is in `/fxn_decorator_implementations`
    - accountImplementation contains classes related to accounts
    - substrateCallImplementation contains classes related to bonding and nominating
+
 
 #### Immediate TODOs:
 * Add local network docker deployment for better testing
