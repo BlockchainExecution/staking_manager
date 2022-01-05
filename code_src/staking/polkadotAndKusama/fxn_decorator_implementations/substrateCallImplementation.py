@@ -1,31 +1,34 @@
-from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementationUtils import *
-from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import *
+from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.substrateCallImplementationUtils import *
+from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.accountImplementation import *
 from substrateinterface import ExtrinsicReceipt
 from config import dotModulesErrors
+from substrateinterface.exceptions import SubstrateRequestException
+
+from Logger import myLogger
 
 
 # https://docs.rs/pallet-staking/latest/pallet_staking/enum.Call.html#variant.chill
-class DotSubstrateCall:
+class SubstrateCall:
     """
     Generic class for executing calls to DOT network
     The following calls are made to this class:
-    * All calls in bonderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
-    * Some calls in nominatorArgParser.py (nominate, unnominate)
+    * All calls in dotBonderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
+    * Some calls in dotNominatorArgParser.py (nominate, unnominate)
     * 1 call in stakerArgParser (staker)
     """
 
-    def __init__(self, cli_name, call_module, call_params, seed):
+    def __init__(self, config, cli_name, call_module, call_params, seed):
+        self.activeConfig = config
         self.call_module = call_module
         self.call_params = call_params
         self.seed = seed
         self.logger = myLogger(cli_name)
         self.logger.info("Start %s Program." % cli_name)
 
-    @staticmethod
-    def errorHandler(extrinsic_hash, block_hash, logger):
+    def errorHandler(self, extrinsic_hash, block_hash, logger):
         errors = set()
         receipt = ExtrinsicReceipt(
-            substrate=activeConfig.activeSubstrate,
+            substrate=self.activeConfig.activeSubstrate,
             extrinsic_hash=extrinsic_hash,
             block_hash=block_hash
         )
@@ -52,10 +55,11 @@ class DotSubstrateCall:
         # this_keypair = dotCreateKeyPair(logger=self.logger, mnemonic=self.seed)
         # TODO: should call AccountImplementation().createAccount() instead to keep everything needed in accountImplementation.py
         # this_keypair = KeyPairImplementation().getAddressFromMnemonic()
-        this_address = AccountImplementation(logger=self.logger, mnemonic=self.seed).getAddressFromMnemonic()
-        extrinsic = activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_address)
+        this_address = AccountImplementation(config=self.activeConfig, logger=self.logger,
+                                             mnemonic=self.seed).getAddressFromMnemonic()
+        extrinsic = self.activeConfig.activeSubstrate.create_signed_extrinsic(call=call, keypair=this_address)
         try:
-            receipt = activeConfig.activeSubstrate.submit_extrinsic(extrinsic, wait_for_inclusion=True)
+            receipt = self.activeConfig.activeSubstrate.submit_extrinsic(extrinsic, wait_for_inclusion=True)
 
             if receipt.is_success:
                 self.logger.info(
@@ -80,13 +84,15 @@ class DotSubstrateCall:
     def __call__(self, func):
         self.logger.info("execute %s function." % func.__name__)
         if func.__name__ == "bond":
-            bondValidator = BondingValidator(logger=self.logger, ss58_address=self.call_params['controller'],
+            bondValidator = BondingValidator(config=self.activeConfig, logger=self.logger,
+                                             ss58_address=self.call_params['controller'],
                                              tokenNumber=self.call_params['value'])
             bondValidator.validateAccountDataBeforeBonding()
 
         if func.__name__ == "bond_extra":
-            self.call_params['max_additional'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
-            bondValidator = BondingValidator(logger=self.logger, ss58_address=self.call_params['controller'],
+            self.call_params['max_additional'] = self.call_params['value'] * self.activeConfig.coinDecimalPlaces
+            bondValidator = BondingValidator(config=self.activeConfig, logger=self.logger,
+                                             ss58_address=self.call_params['controller'],
                                              tokenNumber=self.call_params['max_additional'])
 
             bondValidator.validateAccountDataBeforeBonding()
@@ -94,18 +100,18 @@ class DotSubstrateCall:
             del self.call_params['controller']
 
         try:
-            self.call_params['value'] = self.call_params['value'] * activeConfig.coinDecimalPlaces
+            self.call_params['value'] = self.call_params['value'] * self.activeConfig.coinDecimalPlaces
         except KeyError:
             pass
 
-        call_chill = activeConfig.activeSubstrate.compose_call(
+        call_chill = self.activeConfig.activeSubstrate.compose_call(
             call_module=f"{self.call_module}",
             call_function="chill",
             call_params={}
         )
 
         if func.__name__ == "bond":
-            call_bond = activeConfig.activeSubstrate.compose_call(
+            call_bond = self.activeConfig.activeSubstrate.compose_call(
                 call_module=f"{self.call_module}",
                 call_function=f"{func.__name__}",
                 call_params=self.call_params
@@ -117,7 +123,7 @@ class DotSubstrateCall:
 
         elif func.__name__ == "stop_nominate_all":
 
-            call_unbond = activeConfig.activeSubstrate.compose_call(
+            call_unbond = self.activeConfig.activeSubstrate.compose_call(
                 call_module=f"{self.call_module}",
                 call_function="unbond",
                 call_params=self.call_params
@@ -133,14 +139,14 @@ class DotSubstrateCall:
                                 'value': self.call_params['value'],
                                 'payee': self.call_params['payee']}
 
-            call_bond = activeConfig.activeSubstrate.compose_call(
+            call_bond = self.activeConfig.activeSubstrate.compose_call(
                 call_module=f"{self.call_module}",
                 call_function="bond",
                 call_params=call_params_bond
             )
             call_params_nominate = {'targets': self.call_params['targets']}
 
-            call_nominate = activeConfig.activeSubstrate.compose_call(
+            call_nominate = self.activeConfig.activeSubstrate.compose_call(
                 call_module=f"{self.call_module}",
                 call_function="nominate",
                 call_params=call_params_nominate
@@ -151,7 +157,7 @@ class DotSubstrateCall:
 
             self.__exit__()
         else:
-            call = activeConfig.activeSubstrate.compose_call(
+            call = self.activeConfig.activeSubstrate.compose_call(
                 call_module=f"{self.call_module}",
                 call_function=f"{func.__name__}",
                 call_params=self.call_params
@@ -161,6 +167,6 @@ class DotSubstrateCall:
 
     def __exit__(self):
         # close connection with remote socket
-        activeConfig.activeSubstrate.close()
+        self.activeConfig.activeSubstrate.close()
         # exit system
         sys.exit(0)

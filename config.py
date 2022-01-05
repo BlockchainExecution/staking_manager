@@ -1,23 +1,4 @@
 from substrateinterface import SubstrateInterface
-
-# Double check code runs and then delete the below commented out
-#
-# import os
-# from utils import get_project_root_dir
-
-# # execution environment (for testing) --------------
-# main_script = os.path.join(get_project_root_dir(), "StakingManager.py")
-# # to get your python env, execute "which python" in CLI with env activated
-# # E.g. for anaconda read https://docs.anaconda.com/anaconda/user-guide/tasks/integration/python-path/
-
-# """
-#  Lucas:
-#  I put my env below, just comment it out and run yours. We'll put
-#  everything in a docker container later to resolve this issue
-# """
-# venv_env = "/Users/lucas/opt/anaconda3/envs/crypto_hedge_fund/bin/python"
-# # venv_env = os.path.join(get_project_root_dir(), "venv\\Scripts\\python.exe")
-
 import json
 
 
@@ -69,7 +50,7 @@ def substrateWestend():
 # validator
 westendValidator = ["5C556QTtg1bJ43GDSgeowa3Ark6aeSHGTac1b2rKSXtgmSmW"]
 binanceValidator = ["114SUbKCXjmb9czpWTtS3JANSmNRwVa4mmsMrWYpRG1kDH5"]
-
+ksmValidator = ['CauLTiqZKSAAC7BmLrqTyKFVchj3XiRPXEuRzya7WcNAwa7']
 # staking errors mapper
 dotModulesErrors = json.loads("""{
   "6": {
@@ -119,6 +100,7 @@ dotModulesErrors = json.loads("""{
 # TODO a function that check number of active nominator if the value > 22500 return False (no place to nominate) else True
 # configs
 # TODO `value` must be more than the `minimum_balance` specified by`T::Currency`. how to use substrate to fetch this information
+# Polkadot
 class ProductionConfig:
     activeSubstrate = substratePolkadot()
     activeValidator = binanceValidator
@@ -143,4 +125,30 @@ class TestingConfig:
     existentialDeposit = 1
 
 
-activeConfig = TestingConfig
+# Kusama
+class KusamaProductionConfig:
+    activeSubstrate = substrateKusama()
+    activeValidator = ksmValidator
+    ss58_format = 0
+    coinDecimalPlaces = 10 ** 10
+    coinDecimalPlacesLength = 10
+    coinName = "DOT"
+    # Nominating currently requires a minimum of 120 DOT staked funds on Polkadot
+    stakeMinimumAmount = 120
+    # On the Polkadot network, an address is only active when it holds a minimum amount, currently set at 1 DOT
+    existentialDeposit = 1
+
+
+class KusamaTestingConfig:
+    activeSubstrate = substrateKusama()
+    activeValidator = ksmValidator
+    ss58_format = 42
+    coinDecimalPlaces = 10 ** 12
+    coinDecimalPlacesLength = 12
+    coinName = "KSM"
+    stakeMinimumAmount = 1
+    existentialDeposit = 1
+
+
+DotActiveConfig = KusamaTestingConfig
+kusamaActiveConfig = KusamaTestingConfig

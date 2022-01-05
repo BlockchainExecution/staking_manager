@@ -1,16 +1,18 @@
-from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementation import DotSubstrateCall
+from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.substrateCallImplementation import SubstrateCall
 from common import MyHelpFormatter
-from code_src.staking.dot.dotArgparserUtil import actionMnemonic, actionNumberOfTokens, actionControllerAddress, \
+from code_src.staking.polkadotAndKusama.argparserUtil import actionMnemonic, actionNumberOfTokens, \
+    actionControllerAddress, \
     actionRewardsDestination, \
     actionValidatorAddress, actionHelp, subcommand, actionNumSlashingSpans
 from examples import exampleBond, exampleBonder, exampleBoundExtra, exampleReBound, exampleWithdrawUnBonded
+from config import kusamaActiveConfig
 
 
-def bonderArgParser(parent_parser):
+def ksmBonderArgParser(parent_parser):
     # bonder
     # bonder parent parser
-    bonderParser = parent_parser.add_parser("bonder", help="bond interface to DOT.", epilog=exampleBonder,
-                                             formatter_class=MyHelpFormatter)
+    bonderParser = parent_parser.add_parser("bonder", help="bond interface to KSM.", epilog=exampleBonder,
+                                            formatter_class=MyHelpFormatter)
     bonderSubParser = bonderParser.add_subparsers(help='')
 
     # bond
@@ -38,11 +40,11 @@ def bonderArgParser(parent_parser):
     @subcommand(parent=bonderSubParser,
                 subHelp="Take the origin account as a stash and lock up `value` of its balance. `controller` will be the account that controls it.",
                 epilog=exampleBond, reqArgs=[actionMnemonic(), actionControllerAddress(), actionNumberOfTokens()],
-                optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
+                optArgs=[actionRewardsDestination(), actionValidatorAddress(kusamaActiveConfig), actionHelp()])
     def bond(args):
-        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
-                          call_params={'controller': args.controller_address, 'value': args.number_of_tokens,
-                                       'payee': args.rewards_destination}, seed=args.mnemonic)
+        @SubstrateCall(config=kusamaActiveConfig, cli_name="bonder", call_module="Staking",
+                       call_params={'controller': args.controller_address, 'value': args.number_of_tokens,
+                                    'payee': args.rewards_destination}, seed=args.mnemonic)
         def bond():
             pass
 
@@ -71,8 +73,8 @@ def bonderArgParser(parent_parser):
                 epilog=exampleBond, reqArgs=[actionMnemonic(), actionNumberOfTokens()],
                 optArgs=[actionHelp()])
     def unbond(args):
-        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
-                          call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
+        @SubstrateCall(config=kusamaActiveConfig, cli_name="bonder", call_module="Staking",
+                       call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
         def unbond():
             """
             - Invalid subscription id
@@ -99,10 +101,10 @@ def bonderArgParser(parent_parser):
     @subcommand(parent=bonderSubParser,
                 subHelp="Rebond a portion of the stash scheduled to be unlocked.",
                 epilog=exampleReBound, reqArgs=[actionMnemonic(), actionNumberOfTokens()],
-                optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
+                optArgs=[actionRewardsDestination(), actionValidatorAddress(kusamaActiveConfig), actionHelp()])
     def rebond(args):
-        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
-                          call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
+        @SubstrateCall(config=kusamaActiveConfig, cli_name="bonder", call_module="Staking",
+                       call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
         def rebond():
             pass
 
@@ -124,11 +126,11 @@ def bonderArgParser(parent_parser):
     @subcommand(parent=bonderSubParser,
                 subHelp="Add some extra amount that have appeared in the stash `free_balance` into the balance up for staking.",
                 epilog=exampleBoundExtra, reqArgs=[actionMnemonic(), actionControllerAddress(), actionNumberOfTokens()],
-                optArgs=[actionRewardsDestination(), actionValidatorAddress(), actionHelp()])
+                optArgs=[actionRewardsDestination(), actionValidatorAddress(kusamaActiveConfig), actionHelp()])
     def bondextra(args):
-        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
-                          call_params={'value': args.number_of_tokens, 'controller': args.controller_address},
-                          seed=args.mnemonic)
+        @SubstrateCall(config=kusamaActiveConfig, cli_name="bonder", call_module="Staking",
+                       call_params={'value': args.number_of_tokens, 'controller': args.controller_address},
+                       seed=args.mnemonic)
         def bond_extra():
             pass
 
@@ -156,8 +158,8 @@ def bonderArgParser(parent_parser):
                 epilog=exampleWithdrawUnBonded, reqArgs=[actionMnemonic(), actionNumSlashingSpans()],
                 optArgs=[actionHelp()])
     def withdrawunbonded(args):
-        @DotSubstrateCall(cli_name="bonder", call_module="Staking",
-                          call_params={'num_slashing_spans': args.num_slashing_spans}, seed=args.mnemonic)
+        @SubstrateCall(config=kusamaActiveConfig, cli_name="bonder", call_module="Staking",
+                       call_params={'num_slashing_spans': args.num_slashing_spans}, seed=args.mnemonic)
         def withdraw_unbonded():
             pass
 

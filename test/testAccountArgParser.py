@@ -1,10 +1,4 @@
 import unittest
-
-# # I need to run the below block to import utils
-# import sys
-# sys.path.append("../staking_manager")
-# # --------
-
 from common import venv_env, main_script
 from utils import executeCliCommand
 
@@ -23,11 +17,6 @@ class AccountTest(unittest.TestCase):
     # test func createNewAccount
     def test_create(self):
         stdIn, sdtOut = executeCliCommand(venv_env, main_script, "test_create ", "dot", "account", "create")
-        # print("stdIn is:\n")
-        # printTmp(stdIn)
-        # print("stdOut is:\n")
-        # print(type(sdtOut))
-        # print(sdtOut)
         self.assertTrue("<Keypair (address=" in stdIn)
 
     # test func getAllAccountInfo
