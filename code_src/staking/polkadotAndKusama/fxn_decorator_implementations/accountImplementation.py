@@ -1,4 +1,7 @@
-from code_src.staking.dot.fxn_decorator_implementations.accountImplementationUtils import *
+import sys
+from config import dotActiveConfig
+from Logger import myLogger
+from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.accountImplementationUtils import *
 
 
 class AccountImplementation:
@@ -15,7 +18,8 @@ class AccountImplementation:
     createMnemonic just calls MnemonicImplementation in accountImplementationUtils.py
     """
 
-    def __init__(self, logger, mnemonic=None, ss58_address=None):
+    def __init__(self, config, logger, mnemonic=None, ss58_address=None):
+        self.activeConfig = config
         self.logger = logger
         self.mnemonic = mnemonic
         self.ss58_address = ss58_address
@@ -24,7 +28,8 @@ class AccountImplementation:
         # MnemonicImplementation is called here instead of self.createMnemonic() because it's better
         # for functions in the AccountImplementation class to directly call the implementation classes
         newMnemonic = MnemonicImplementation(self.logger).createMnemonic()
-        createAccountKeyPair = KeyPairImplementation(self.logger, newMnemonic).getAddressFromMnemonic()
+        createAccountKeyPair = KeyPairImplementation(self.activeConfig, self.logger,
+                                                     newMnemonic).getAddressFromMnemonic()
         # check if mnemonic is created if this pass keypair will pass without errors
         if not createAccountKeyPair:
             return False
@@ -45,7 +50,7 @@ class AccountImplementation:
         to get an address from a mnemonic without requiring a function outside accountImplementation.py
         to call a function in accountImplementationUtils.py
         """
-        address = KeyPairImplementation(self.logger, self.mnemonic).getAddressFromMnemonic()
+        address = KeyPairImplementation(self.activeConfig, self.logger, self.mnemonic).getAddressFromMnemonic()
         return address
 
     def getAllAccountInfo(self):
@@ -53,11 +58,11 @@ class AccountImplementation:
         The purpose of this function is to get an account info for a specific address.
         """
         try:
-            value = activeConfig.activeSubstrate.query('System', 'Account', params=[self.ss58_address]).value
-            fee_frozen = int(value['data']['fee_frozen']) / activeConfig.coinDecimalPlaces
-            free = int(value['data']['free']) / activeConfig.coinDecimalPlaces
-            reserved = int(value['data']['reserved']) / activeConfig.coinDecimalPlaces
-            misc_frozen = int(value['data']['misc_frozen']) / activeConfig.coinDecimalPlaces
+            value = self.activeConfig.activeSubstrate.query('System', 'Account', params=[self.ss58_address]).value
+            fee_frozen = int(value['data']['fee_frozen']) / self.activeConfig.coinDecimalPlaces
+            free = int(value['data']['free']) / self.activeConfig.coinDecimalPlaces
+            reserved = int(value['data']['reserved']) / self.activeConfig.coinDecimalPlaces
+            misc_frozen = int(value['data']['misc_frozen']) / self.activeConfig.coinDecimalPlaces
 
             self.logger.info(f"""account {self.ss58_address} infos
 
@@ -65,10 +70,10 @@ class AccountImplementation:
             consumers : {value['consumers']}
             providers : {value['providers']}
             sufficients : {value['sufficients']}
-            free : {free} {activeConfig.coinName}
-            reserved : {reserved} {activeConfig.coinName}
-            misc_frozen : {misc_frozen} {activeConfig.coinName}
-            fee_frozen : {fee_frozen} {activeConfig.coinName}
+            free : {free} {self.activeConfig.coinName}
+            reserved : {reserved} {self.activeConfig.coinName}
+            misc_frozen : {misc_frozen} {self.activeConfig.coinName}
+            fee_frozen : {fee_frozen} {self.activeConfig.coinName}
             """)
         except Exception as e:
             self.logger.error(f"{e}")
@@ -81,7 +86,8 @@ class AccountImplementation:
             # TODO: improve this to return dictionary with account values
             self.getAllAccountInfo()
         elif purpose == "bonding":
-            return AccountBalanceForBonding(self.logger, self.ss58_address).getAccountBalanceForBonding()
+            return AccountBalanceForBonding(self.activeConfig, self.logger,
+                                            self.ss58_address).getAccountBalanceForBonding()
         else:  # "undefined" scneario - error
             self.logger.warning(f"Unknown object passed into getAccountBalance. Failing.")
             sys.exit(0)
@@ -104,13 +110,14 @@ class DotAccountCall:
     def __call__(self, func):
         name = func.__name__
         if name == "mnemonic":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).createMnemonic()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).createMnemonic()
         elif name == "create":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).createNewAccount()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).createNewAccount()
         elif name == "info":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
         elif name == "keypair":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).getAddressFromMnemonic()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic,
+                                  self.ss58_address).getAddressFromMnemonic()
         else:
             pass
 
