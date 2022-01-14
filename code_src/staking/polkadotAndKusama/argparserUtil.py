@@ -1,5 +1,4 @@
 from common import MyHelpFormatter
-from config import activeConfig
 
 
 def argument(*name_or_flags, **kwargs):
@@ -74,7 +73,7 @@ Choices supports the following:
                     )
 
 
-def actionValidatorAddress():
+def actionValidatorAddress(activeConfig):
     return argument('-va', '--validator_address',
                     help="""
 Address of a Polkadot validators (where to stake coins). It can be one or more address.\nBy default binance validator address will be chosen.\n

@@ -1,10 +1,5 @@
-import json
-import sys
 from bip39 import bip39_validate
 from substrateinterface import Keypair
-from substrateinterface.exceptions import SubstrateRequestException
-from config import activeConfig
-from Logger import myLogger
 
 
 # DO NOT import accountImplementation, dependencies cannot be circular, must be 1 direction,
@@ -44,7 +39,8 @@ class KeyPairImplementation:
     Class creates a keypair
     """
 
-    def __init__(self, logger, mnemonic):
+    def __init__(self, config, logger, mnemonic):
+        self.activeConfig = config
         self.logger = logger
         self.mnemonic = mnemonic
         # what to do if no mnemonic is passed? Adapt fxn signature.
@@ -68,7 +64,7 @@ class KeyPairImplementation:
 
         try:
             # Keypair ~ https://github.com/polkascan/py-substrate-interface#keypair-creation-and-signing
-            key = Keypair.create_from_mnemonic(mnemonic=self.mnemonic, ss58_format=activeConfig.ss58_format)
+            key = Keypair.create_from_mnemonic(mnemonic=self.mnemonic, ss58_format=self.activeConfig.ss58_format)
             self.logger.info(f"""Here is the address associated with the above mnemonic:\n
         {key}
          \n\n""")
@@ -122,7 +118,8 @@ class AccountBalanceForBonding:
     # to prevent importing accountImplementation.py in Utils
     """
 
-    def __init__(self, logger, ss58_address):
+    def __init__(self, config, logger, ss58_address):
+        self.activeConfig = config
         self.logger = logger
         self.ss58_address = ss58_address
 
@@ -130,14 +127,9 @@ class AccountBalanceForBonding:
         return self.getAccountBalanceForBonding()
 
     def getAccountBalanceForBonding(self):
-        """
-        This function should return only the funds which can be safely bonded 
-        and not the "whole" account balance
-        """
-
         # query balance info for an account
-        accountBalanceInfo = activeConfig.activeSubstrate.query('System', 'Account',
-                                                                params=[self.ss58_address]).value
+        accountBalanceInfo = self.activeConfig.activeSubstrate.query('System', 'Account',
+                                                                     params=[self.ss58_address]).value
 
         # In general, the usable balance of the account is the amount that is free minus any funds that are considered
         # frozen (either misc_frozen or fee_frozen) and depend on the reason for which the funds are to be used.
@@ -153,6 +145,6 @@ class AccountBalanceForBonding:
 
         # transferable balance
         miscFrozen = accountBalanceInfo['data']['misc_frozen']
-        totalAccountBalance = (free - miscFrozen) / activeConfig.coinDecimalPlaces
+        totalAccountBalance = (free - miscFrozen) / self.activeConfig.coinDecimalPlaces
 
         return totalAccountBalance

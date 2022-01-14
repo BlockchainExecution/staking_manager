@@ -45,8 +45,8 @@ example:
 # nominator ------------------------------------------------------------------------------------------------------------
 exampleNominator = """
 Note: 
-You need to bond you dot coin before you can use nominate option.
-python stake dot bounder -h for more information
+You need to bond you <coin> before you can use nominate option.
+check stakingmanager.py <coin> bounder -h for more information
 
 example:
     python %(prog)s -h
