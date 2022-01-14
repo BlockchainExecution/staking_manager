@@ -1,5 +1,4 @@
 from typing import Literal
-
 from substrateinterface import SubstrateInterface
 import json
 
@@ -155,6 +154,7 @@ class KusamaTestingConfig:
 dotActiveConfig = DotTestingConfig
 kusamaActiveConfig = KusamaTestingConfig
 # -------------------------------------------------- ** End Polkadot ** ------------------------------------------------
+
 # -------------------------------------------------- ** Start Cosmos ** ------------------------------------------------
 class cosmosProductionConfig:
     apiUrl = "https://api.cosmos.network/{}"
@@ -182,3 +182,4 @@ class cosmosTestingConfig:
 
 cosmosActiveConfig = cosmosTestingConfig
 # -------------------------------------------------- ** End Cosmos ** --------------------------------------------------
+

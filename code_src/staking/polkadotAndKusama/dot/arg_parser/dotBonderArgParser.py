@@ -5,7 +5,7 @@ from code_src.staking.polkadotAndKusama.argparserUtil import actionMnemonic, act
     actionRewardsDestination, \
     actionValidatorAddress, actionHelp, subcommand, actionNumSlashingSpans
 from examples import exampleBond, exampleBonder, exampleBoundExtra, exampleReBound, exampleWithdrawUnBonded
-from config import dotActiveConfig
+from config import dotActiveConfig # might be -> from config import DotActiveConfig (?)
 
 
 def dotBonderArgParser(parent_parser):
@@ -43,6 +43,7 @@ def dotBonderArgParser(parent_parser):
                 optArgs=[actionRewardsDestination(), actionValidatorAddress(dotActiveConfig), actionHelp()])
     def bond(args):
         @SubstrateCall(config=dotActiveConfig, cli_name="bonder", call_module="Staking",
+
                        call_params={'controller': args.controller_address, 'value': args.number_of_tokens,
                                     'payee': args.rewards_destination}, seed=args.mnemonic)
         def bond():

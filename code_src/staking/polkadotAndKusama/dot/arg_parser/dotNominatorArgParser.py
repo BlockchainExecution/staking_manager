@@ -29,7 +29,7 @@ def dotNominatorArgParser(parser_parent):
     :return:
     """
 
-    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionMnemonic()],
+    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionMnemonic()], 
                 optArgs=[actionValidatorAddress(dotActiveConfig), actionHelp()])
     def nominate(args):
         @SubstrateCall(config=dotActiveConfig,cli_name="Nominator", call_module="Staking", call_params={'targets': args.validator_address},

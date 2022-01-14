@@ -2,6 +2,7 @@ import argparse
 
 from code_src.staking.cosmos.arg_parser.atomAccountArgParser import atomAccountArgParser
 from code_src.staking.cosmos.arg_parser.atomDelegatorArgParser import atomDelegatorArgParser
+
 from code_src.staking.polkadotAndKusama.dot.arg_parser.accountArgParser import accountArgParser
 from code_src.staking.polkadotAndKusama.dot.arg_parser.beforeIStartArgParser import beforeIStartArgParser
 from code_src.staking.polkadotAndKusama.dot.arg_parser.dotNominatorArgParser import dotNominatorArgParser
@@ -61,7 +62,7 @@ dotParentParser = stakeCoinSubParsers.add_parser(name='dot', help='Polkadot stak
 ksmParentParser = stakeCoinSubParsers.add_parser(name='ksm', help='Kusama staking interface')
 # atom
 atomParentParser = stakeCoinSubParsers.add_parser(name='atom', help='Cosmos staking interface')
-#
+
 # dot
 dotSubParser = dotParentParser.add_subparsers(dest="dot", help='Available dot staking commands')
 dotAccount = accountArgParser(dotSubParser, "DOT")
@@ -83,6 +84,7 @@ ksmValidator = validatorDotArgParser(ksmSubParser)
 atomSubParser = atomParentParser.add_subparsers(dest="atom", help='Available atom staking commands')
 atomAccount = atomAccountArgParser(atomSubParser)
 atomatomDelegator = atomDelegatorArgParser(atomSubParser)
+
 
 if __name__ == "__main__":
     args = parentParser.parse_args()
@@ -170,7 +172,7 @@ if __name__ == "__main__":
 
             else:
                 ksmParentParser.print_help()
-
+               
         elif 'atom' in var_args:
             atom = var_args['atom']
             if atom:

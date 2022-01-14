@@ -116,8 +116,7 @@ class DotAccountCall:
         elif name == "info":
             AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
         elif name == "keypair":
-            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic,
-                                  self.ss58_address).getAddressFromMnemonic()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).getAddressFromMnemonic()
         else:
             pass
 
