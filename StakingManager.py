@@ -1,4 +1,8 @@
 import argparse
+
+from code_src.staking.cosmos.arg_parser.atomAccountArgParser import atomAccountArgParser
+from code_src.staking.cosmos.arg_parser.atomDelegatorArgParser import atomDelegatorArgParser
+
 from code_src.staking.polkadotAndKusama.dot.arg_parser.accountArgParser import accountArgParser
 from code_src.staking.polkadotAndKusama.dot.arg_parser.beforeIStartArgParser import beforeIStartArgParser
 from code_src.staking.polkadotAndKusama.dot.arg_parser.dotNominatorArgParser import dotNominatorArgParser
@@ -56,8 +60,9 @@ stakeCoinSubParsers = parentParser.add_subparsers(help='Available staking coins.
 dotParentParser = stakeCoinSubParsers.add_parser(name='dot', help='Polkadot staking interface')
 # ksm
 ksmParentParser = stakeCoinSubParsers.add_parser(name='ksm', help='Kusama staking interface')
+# atom
+atomParentParser = stakeCoinSubParsers.add_parser(name='atom', help='Cosmos staking interface')
 
-#
 # dot
 dotSubParser = dotParentParser.add_subparsers(dest="dot", help='Available dot staking commands')
 dotAccount = accountArgParser(dotSubParser, "DOT")
@@ -74,6 +79,12 @@ ksmStaker = ksmStakeDotArgParser(ksmSubParser)
 ksmNominator = ksmNominatorArgParser(ksmSubParser)
 ksmBonder = ksmBonderArgParser(ksmSubParser)
 ksmValidator = validatorDotArgParser(ksmSubParser)
+
+# atom
+atomSubParser = atomParentParser.add_subparsers(dest="atom", help='Available atom staking commands')
+atomAccount = atomAccountArgParser(atomSubParser)
+atomatomDelegator = atomDelegatorArgParser(atomSubParser)
+
 
 if __name__ == "__main__":
     args = parentParser.parse_args()
@@ -161,5 +172,42 @@ if __name__ == "__main__":
 
             else:
                 ksmParentParser.print_help()
+               
+        elif 'atom' in var_args:
+            atom = var_args['atom']
+            if atom:
+                if atom == "stake":
+                    args.func(args)
+
+                # nominator
+
+                # bounder
+                elif atom == "delegator":
+
+                    try:
+                        args.func(args)
+                    except AttributeError:
+                        atomatomDelegator.print_help()
+
+                # accounting
+                elif atom == "account":
+                    try:
+                        # print(args)
+                        args.func(args)
+                    except AttributeError:
+                        atomAccount.print_help()
+                # TODO
+                elif atom == "validator":
+                    pass
+                elif atom == "guide":
+                    try:
+                        # print(args)
+                        args.func(args)
+                    except AttributeError:
+                        guide.print_help()
+
+            else:
+                atomParentParser.print_help()
+
     else:
         parentParser.print_help()

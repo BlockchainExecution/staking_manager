@@ -1,0 +1,27 @@
+account 1
+    seed: skill beauty tape never chest mobile scatter coral slab surround divorce awesome army tail actor system manage slice name scout fault mask fruit state,
+    derivation_path: m/44'/118'/0'/0/0,
+    private_key: 072ed13728ffbca87950f022a17780b13e110c64be40bae56f29d3f98373e20d,
+    public_key: 03d22e027e57cc24e9fa7bfe98b8a85ce96f0c8862b6e08d6cb5b0b908db3483da,
+    address: cosmos18thxn5pjlwnukkufpuwhwln25n978cjwdtl2h8
+
+account 2
+    seed : year slender mom timber surround onion include health curve board december arrange couple desert garlic pen chef turtle amateur winner engage delay mimic decline
+    derivation_path : m/44'/118'/0'/0/0
+    private_key : 94b7e9ab33d27671bfce066f579f6052d53a6e93dd3f7451f8dd7ec9066bbd01
+    public_key : 03ce34f741ff7e6dfd9694e7da48e0e97e8197a12d7d3889a2657ae8edefab662b
+    address : cosmos1qtxxcdjk9zxt9we7hvuzjl48e0x8c0e4nt6c0g
+
+# testnet -------------------------------------------------
+seed : oak enact invite stereo grunt what stay erode matter where into copper
+cosmos1uvenyjazulhzyd4707k7gracxpfmffa6vmvewf
+------------------------
+seed : truth effort scatter pioneer add possible battle typical satoshi genius silent merry
+cosmos1k6a85zhwxnh3zth2zk897zmsgtyt99r580qjsx
+------------------------
+news rhythm angry during earn cloth fun lounge apart beyond hat morning
+cosmos17lgg3gwazagrqkdcyeqcn2jw9f59n4pumd9jjk
+
+cosmos1uvenyjazulhzyd4707k7gracxpfmffa6vmvewf
+cosmos1k6a85zhwxnh3zth2zk897zmsgtyt99r580qjsx
+cosmos17lgg3gwazagrqkdcyeqcn2jw9f59n4pumd9jjk

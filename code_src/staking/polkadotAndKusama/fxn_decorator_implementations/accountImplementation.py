@@ -1,5 +1,5 @@
 import sys
-
+from config import dotActiveConfig
 from Logger import myLogger
 from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.accountImplementationUtils import *
 
@@ -110,13 +110,13 @@ class DotAccountCall:
     def __call__(self, func):
         name = func.__name__
         if name == "mnemonic":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).createMnemonic()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).createMnemonic()
         elif name == "create":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).createNewAccount()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).createNewAccount()
         elif name == "info":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).getAllAccountInfo()
         elif name == "keypair":
-            AccountImplementation(self.logger, self.mnemonic, self.ss58_address).getAddressFromMnemonic()
+            AccountImplementation(DotActiveConfig, self.logger, self.mnemonic, self.ss58_address).getAddressFromMnemonic()
         else:
             pass
 

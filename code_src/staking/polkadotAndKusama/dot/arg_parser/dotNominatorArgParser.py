@@ -2,7 +2,7 @@ from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.substrateC
 from common import MyHelpFormatter
 from code_src.staking.polkadotAndKusama.argparserUtil import actionMnemonic, actionValidatorAddress, actionHelp, subcommand, \
     actionTest, actionNumberOfTokens
-from config import DotActiveConfig
+from config import dotActiveConfig
 from examples import exampleNominator, exampleNominate, exampleUnominateTmp, exampleUnominateAll
 
 
@@ -29,10 +29,10 @@ def dotNominatorArgParser(parser_parent):
     :return:
     """
 
-    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionMnemonic()],
-                optArgs=[actionValidatorAddress(DotActiveConfig), actionHelp()])
+    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionMnemonic()], 
+                optArgs=[actionValidatorAddress(dotActiveConfig), actionHelp()])
     def nominate(args):
-        @SubstrateCall(config=DotActiveConfig,cli_name="Nominator", call_module="Staking", call_params={'targets': args.validator_address},
+        @SubstrateCall(config=dotActiveConfig,cli_name="Nominator", call_module="Staking", call_params={'targets': args.validator_address},
                           seed=args.mnemonic)
         def nominate():
             pass
@@ -84,7 +84,7 @@ def dotNominatorArgParser(parser_parent):
                 reqArgs=[actionMnemonic(), actionNumberOfTokens()],
                 optArgs=[actionTest()])
     def stop_nominate_all(args):
-        @SubstrateCall(config=DotActiveConfig,cli_name="Nominator", call_module="Staking", call_params={'value': args.number_of_tokens},
+        @SubstrateCall(config=dotActiveConfig,cli_name="Nominator", call_module="Staking", call_params={'value': args.number_of_tokens},
                           seed=args.mnemonic)
         def stop_nominate_all():
             pass

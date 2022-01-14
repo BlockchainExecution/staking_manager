@@ -5,7 +5,7 @@ from code_src.staking.polkadotAndKusama.argparserUtil import actionMnemonic, act
     actionRewardsDestination, \
     actionValidatorAddress, actionHelp, subcommand, actionNumSlashingSpans
 from examples import exampleBond, exampleBonder, exampleBoundExtra, exampleReBound, exampleWithdrawUnBonded
-from config import DotActiveConfig
+from config import dotActiveConfig # might be -> from config import DotActiveConfig (?)
 
 
 def dotBonderArgParser(parent_parser):
@@ -40,9 +40,10 @@ def dotBonderArgParser(parent_parser):
     @subcommand(parent=bonderSubParser,
                 subHelp="Take the origin account as a stash and lock up `value` of its balance. `controller` will be the account that controls it.",
                 epilog=exampleBond, reqArgs=[actionMnemonic(), actionControllerAddress(), actionNumberOfTokens()],
-                optArgs=[actionRewardsDestination(), actionValidatorAddress(DotActiveConfig), actionHelp()])
+                optArgs=[actionRewardsDestination(), actionValidatorAddress(dotActiveConfig), actionHelp()])
     def bond(args):
-        @SubstrateCall(config=DotActiveConfig, cli_name="bonder", call_module="Staking",
+        @SubstrateCall(config=dotActiveConfig, cli_name="bonder", call_module="Staking",
+
                        call_params={'controller': args.controller_address, 'value': args.number_of_tokens,
                                     'payee': args.rewards_destination}, seed=args.mnemonic)
         def bond():
@@ -73,7 +74,7 @@ def dotBonderArgParser(parent_parser):
                 epilog=exampleBond, reqArgs=[actionMnemonic(), actionNumberOfTokens()],
                 optArgs=[actionHelp()])
     def unbond(args):
-        @SubstrateCall(config=DotActiveConfig, cli_name="bonder", call_module="Staking",
+        @SubstrateCall(config=dotActiveConfig, cli_name="bonder", call_module="Staking",
                        call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
         def unbond():
             """
@@ -101,9 +102,9 @@ def dotBonderArgParser(parent_parser):
     @subcommand(parent=bonderSubParser,
                 subHelp="Rebond a portion of the stash scheduled to be unlocked.",
                 epilog=exampleReBound, reqArgs=[actionMnemonic(), actionNumberOfTokens()],
-                optArgs=[actionRewardsDestination(), actionValidatorAddress(DotActiveConfig), actionHelp()])
+                optArgs=[actionRewardsDestination(), actionValidatorAddress(dotActiveConfig), actionHelp()])
     def rebond(args):
-        @SubstrateCall(config=DotActiveConfig, cli_name="bonder", call_module="Staking",
+        @SubstrateCall(config=dotActiveConfig, cli_name="bonder", call_module="Staking",
                        call_params={'value': args.number_of_tokens}, seed=args.mnemonic)
         def rebond():
             pass
@@ -126,9 +127,9 @@ def dotBonderArgParser(parent_parser):
     @subcommand(parent=bonderSubParser,
                 subHelp="Add some extra amount that have appeared in the stash `free_balance` into the balance up for staking.",
                 epilog=exampleBoundExtra, reqArgs=[actionMnemonic(), actionControllerAddress(), actionNumberOfTokens()],
-                optArgs=[actionRewardsDestination(), actionValidatorAddress(DotActiveConfig), actionHelp()])
+                optArgs=[actionRewardsDestination(), actionValidatorAddress(dotActiveConfig), actionHelp()])
     def bondextra(args):
-        @SubstrateCall(config=DotActiveConfig, cli_name="bonder", call_module="Staking",
+        @SubstrateCall(config=dotActiveConfig, cli_name="bonder", call_module="Staking",
                        call_params={'value': args.number_of_tokens, 'controller': args.controller_address},
                        seed=args.mnemonic)
         def bond_extra():
@@ -158,7 +159,7 @@ def dotBonderArgParser(parent_parser):
                 epilog=exampleWithdrawUnBonded, reqArgs=[actionMnemonic(), actionNumSlashingSpans()],
                 optArgs=[actionHelp()])
     def withdrawunbonded(args):
-        @SubstrateCall(config=DotActiveConfig, cli_name="bonder", call_module="Staking",
+        @SubstrateCall(config=dotActiveConfig, cli_name="bonder", call_module="Staking",
                        call_params={'num_slashing_spans': args.num_slashing_spans}, seed=args.mnemonic)
         def withdraw_unbonded():
             pass

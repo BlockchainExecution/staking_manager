@@ -1,7 +1,8 @@
+from typing import Literal
 from substrateinterface import SubstrateInterface
 import json
 
-
+# -------------------------------------------------- ** Start Polkadot ** ----------------------------------------------
 # websockets ---------------------------------------
 # substrate are a modular framework for building blockchains.
 # Polkadot is built using Substrate. Chains built with Substrate will be easy to connect as parachains.
@@ -101,7 +102,7 @@ dotModulesErrors = json.loads("""{
 # configs
 # TODO `value` must be more than the `minimum_balance` specified by`T::Currency`. how to use substrate to fetch this information
 # Polkadot
-class ProductionConfig:
+class DotProductionConfig:
     activeSubstrate = substratePolkadot()
     activeValidator = binanceValidator
     ss58_format = 0
@@ -114,7 +115,7 @@ class ProductionConfig:
     existentialDeposit = 1
 
 
-class TestingConfig:
+class DotTestingConfig:
     activeSubstrate = substrateWestend()
     activeValidator = westendValidator
     ss58_format = 42
@@ -150,5 +151,35 @@ class KusamaTestingConfig:
     existentialDeposit = 1
 
 
-DotActiveConfig = KusamaTestingConfig
+dotActiveConfig = DotTestingConfig
 kusamaActiveConfig = KusamaTestingConfig
+# -------------------------------------------------- ** End Polkadot ** ------------------------------------------------
+
+# -------------------------------------------------- ** Start Cosmos ** ------------------------------------------------
+class cosmosProductionConfig:
+    apiUrl = "https://api.cosmos.network/{}"
+    cosmosValidatorAddress = ["cosmosvalcons1yxv746y5egu3l2p0q8pvv99lavgr6ptvdhx306"]
+    denom = "uatom"
+
+
+class cosmosTestingConfig:
+    # apiUrl = "https://api.testnet.cosmos.network:443/{}"
+    apiUrl = "http://143.244.151.9:1317/{}"
+    activeValidator = ["cosmosvalcons1yxv746y5egu3l2p0q8pvv99lavgr6ptvdhx306"]
+    denom = "uatom"
+    coinDecimalPlaces = 10 ** 6
+    coinName = "ATOM"
+    fee = 1000
+    gas = 70000
+    memo = "staking-manager"
+    chain_id = "cosmoshub-4"
+    # The supported broadcast modes include "block"(return after tx commit), "sync"(return afer CheckTx) and "async"(return right away).
+    sync_mode = "sync"
+    DEFAULT_DERIVATION_PATH = "m/44'/118'/0'/0/0"
+    DEFAULT_BECH32_HRP = "cosmos"
+    SyncMode = Literal["sync", "async", "block"]
+
+
+cosmosActiveConfig = cosmosTestingConfig
+# -------------------------------------------------- ** End Cosmos ** --------------------------------------------------
+

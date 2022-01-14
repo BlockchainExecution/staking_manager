@@ -49,6 +49,14 @@ def actionControllerAddress():
                     )
 
 
+def actionDerivationPath():
+    return argument('-dp', '--derivation_path',
+                    help="""the key type and sequence number refer to the segment of the BIP44 derivation path (for example, 0, 1, 2, ...) that is used to derive a private and a public key from the mnemonic!\n\n""",
+                    required=True, type=str
+                    )
+
+
+
 def actionNumberOfTokens():
     return argument('-nt', '--number_of_tokens',
                     help='The number of DOT you would like to stake to the network.\n',

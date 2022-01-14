@@ -12,7 +12,7 @@ class SubstrateCall:
     """
     Generic class for executing calls to DOT network
     The following calls are made to this class:
-    * All calls in dotBonderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
+    * All calls in atomBonderArgParser.py (bond, unbond, rebond, bondextra, withdrawunbounded)
     * Some calls in dotNominatorArgParser.py (nominate, unnominate)
     * 1 call in stakerArgParser (staker)
     """
