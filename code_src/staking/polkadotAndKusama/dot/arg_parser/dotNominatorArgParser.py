@@ -1,11 +1,12 @@
-from code_src.staking.dot.fxn_decorator_implementations.substrateCallImplementation import DotSubstrateCall
+from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.substrateCallImplementation import SubstrateCall
 from common import MyHelpFormatter
-from code_src.staking.dot.dotArgparserUtil import actionMnemonic, actionValidatorAddress, actionHelp, subcommand, \
+from code_src.staking.polkadotAndKusama.argparserUtil import actionMnemonic, actionValidatorAddress, actionHelp, subcommand, \
     actionTest, actionNumberOfTokens
+from config import dotActiveConfig
 from examples import exampleNominator, exampleNominate, exampleUnominateTmp, exampleUnominateAll
 
 
-def nominatorArgParser(parser_parent):
+def dotNominatorArgParser(parser_parent):
     # nominator parent parser
     nominatorParser = parser_parent.add_parser(name="nominator", help="""nomination interface to DOT.""",
                                                add_help=False, epilog=exampleNominator,
@@ -28,10 +29,10 @@ def nominatorArgParser(parser_parent):
     :return:
     """
 
-    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionMnemonic()],
-                optArgs=[actionValidatorAddress(), actionHelp()])
+    @subcommand(parent=nominatorSubParser, subHelp=exampleNominate, reqArgs=[actionMnemonic()], 
+                optArgs=[actionValidatorAddress(dotActiveConfig), actionHelp()])
     def nominate(args):
-        @DotSubstrateCall(cli_name="Nominator", call_module="Staking", call_params={'targets': args.validator_address},
+        @SubstrateCall(config=dotActiveConfig,cli_name="Nominator", call_module="Staking", call_params={'targets': args.validator_address},
                           seed=args.mnemonic)
         def nominate():
             pass
@@ -57,7 +58,7 @@ def nominatorArgParser(parser_parent):
     @subcommand(parent=nominatorSubParser, subHelp=exampleUnominateTmp, reqArgs=[actionMnemonic()],
                 optArgs=[actionTest()])
     def stop_nominate_tmp(args):
-        @DotSubstrateCall(cli_name="Nominator", call_module="Staking", call_params={}, seed=args.mnemonic)
+        @SubstrateCall(cli_name="Nominator", call_module="Staking", call_params={}, seed=args.mnemonic)
         def chill():
             pass
 
@@ -83,7 +84,7 @@ def nominatorArgParser(parser_parent):
                 reqArgs=[actionMnemonic(), actionNumberOfTokens()],
                 optArgs=[actionTest()])
     def stop_nominate_all(args):
-        @DotSubstrateCall(cli_name="Nominator", call_module="Staking", call_params={'value': args.number_of_tokens},
+        @SubstrateCall(config=dotActiveConfig,cli_name="Nominator", call_module="Staking", call_params={'value': args.number_of_tokens},
                           seed=args.mnemonic)
         def stop_nominate_all():
             pass

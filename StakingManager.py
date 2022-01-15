@@ -1,11 +1,18 @@
 import argparse
-from code_src.staking.dot.arg_parser.accountArgParser import accountArgParser
-from code_src.staking.dot.arg_parser.beforeIStartArgParser import beforeIStartArgParser
-from code_src.staking.dot.arg_parser.nominatorArgParser import nominatorArgParser
-from code_src.staking.dot.arg_parser.bonderArgParser import bonderArgParser
-from code_src.staking.dot.arg_parser.stakerArgParser import stakeDotArgParser
+
+from code_src.staking.cosmos.arg_parser.atomAccountArgParser import atomAccountArgParser
+from code_src.staking.cosmos.arg_parser.atomDelegatorArgParser import atomDelegatorArgParser
+
+from code_src.staking.polkadotAndKusama.dot.arg_parser.accountArgParser import accountArgParser
+from code_src.staking.polkadotAndKusama.dot.arg_parser.beforeIStartArgParser import beforeIStartArgParser
+from code_src.staking.polkadotAndKusama.dot.arg_parser.dotNominatorArgParser import dotNominatorArgParser
+from code_src.staking.polkadotAndKusama.dot.arg_parser.dotBonderArgParser import dotBonderArgParser
+from code_src.staking.polkadotAndKusama.dot.arg_parser.dotStakerArgParser import dotStakeDotArgParser
+from code_src.staking.polkadotAndKusama.ksm.arg_parser.ksmStakerArgParser import ksmStakeDotArgParser
 from Logger import myLogger
-from code_src.staking.dot.arg_parser.validatorArgParser import validatorDotArgParser
+from code_src.staking.polkadotAndKusama.dot.arg_parser.validatorArgParser import validatorDotArgParser
+from code_src.staking.polkadotAndKusama.ksm.arg_parser.ksmBonderArgParser import ksmBonderArgParser
+from code_src.staking.polkadotAndKusama.ksm.arg_parser.ksmNominatorArgParser import ksmNominatorArgParser
 
 __name = "StakingManager"
 logger = myLogger(__name)
@@ -51,19 +58,32 @@ stakeCoinSubParsers = parentParser.add_subparsers(help='Available staking coins.
 # parent parser for any added coin will be declared here
 # naming will be as follow (xCoinParentParser)
 dotParentParser = stakeCoinSubParsers.add_parser(name='dot', help='Polkadot staking interface')
-# xtzParentParser = stakeCoinSubParsers.add_parser(name='xtz', help='Tezos staking interface')
+# ksm
+ksmParentParser = stakeCoinSubParsers.add_parser(name='ksm', help='Kusama staking interface')
+# atom
+atomParentParser = stakeCoinSubParsers.add_parser(name='atom', help='Cosmos staking interface')
 
-#
 # dot
 dotSubParser = dotParentParser.add_subparsers(dest="dot", help='Available dot staking commands')
-account = accountArgParser(dotSubParser)
-staker = stakeDotArgParser(dotSubParser)
-nominator = nominatorArgParser(dotSubParser)
-bounder = bonderArgParser(dotSubParser)
-validator = validatorDotArgParser(dotSubParser)
+dotAccount = accountArgParser(dotSubParser, "DOT")
+dotStaker = dotStakeDotArgParser(dotSubParser)
+dotNominator = dotNominatorArgParser(dotSubParser)
+dotBonder = dotBonderArgParser(dotSubParser)
+dotValidator = validatorDotArgParser(dotSubParser)
 guide = beforeIStartArgParser(dotSubParser)
-# xtz
-# xtzSubParser = xtzParentParser.add_subparsers(dest="xtz", help='Available xtz staking commands')
+
+# ksm
+ksmSubParser = ksmParentParser.add_subparsers(dest="ksm", help='Available ksm staking commands')
+ksmAccount = accountArgParser(dotSubParser, "KSM")
+ksmStaker = ksmStakeDotArgParser(ksmSubParser)
+ksmNominator = ksmNominatorArgParser(ksmSubParser)
+ksmBonder = ksmBonderArgParser(ksmSubParser)
+ksmValidator = validatorDotArgParser(ksmSubParser)
+
+# atom
+atomSubParser = atomParentParser.add_subparsers(dest="atom", help='Available atom staking commands')
+atomAccount = atomAccountArgParser(atomSubParser)
+atomatomDelegator = atomDelegatorArgParser(atomSubParser)
 
 
 if __name__ == "__main__":
@@ -84,14 +104,14 @@ if __name__ == "__main__":
                     try:
                         args.func(args)
                     except AttributeError:
-                        nominator.print_help()
+                        dotNominator.print_help()
                 # bounder
                 elif dot == "bonder":
 
                     try:
                         args.func(args)
                     except AttributeError:
-                        bounder.print_help()
+                        dotBonder.print_help()
 
                 # accounting
                 elif dot == "account":
@@ -99,7 +119,7 @@ if __name__ == "__main__":
                         # print(args)
                         args.func(args)
                     except AttributeError:
-                        account.print_help()
+                        dotAccount.print_help()
                 # TODO
                 elif dot == "validator":
                     pass
@@ -112,5 +132,82 @@ if __name__ == "__main__":
 
             else:
                 dotParentParser.print_help()
+        elif 'ksm' in var_args:
+            ksm = var_args['ksm']
+            if ksm:
+                if ksm == "stake":
+                    args.func(args)
+
+                # nominator
+                elif ksm == "nominator":
+
+                    try:
+                        args.func(args)
+                    except AttributeError:
+                        ksmNominator.print_help()
+                # bounder
+                elif ksm == "bonder":
+
+                    try:
+                        args.func(args)
+                    except AttributeError:
+                        ksmBonder.print_help()
+
+                # accounting
+                elif ksm == "account":
+                    try:
+                        # print(args)
+                        args.func(args)
+                    except AttributeError:
+                        ksmAccount.print_help()
+                # TODO
+                elif ksm == "validator":
+                    pass
+                elif ksm == "guide":
+                    try:
+                        # print(args)
+                        args.func(args)
+                    except AttributeError:
+                        guide.print_help()
+
+            else:
+                ksmParentParser.print_help()
+               
+        elif 'atom' in var_args:
+            atom = var_args['atom']
+            if atom:
+                if atom == "stake":
+                    args.func(args)
+
+                # nominator
+
+                # bounder
+                elif atom == "delegator":
+
+                    try:
+                        args.func(args)
+                    except AttributeError:
+                        atomatomDelegator.print_help()
+
+                # accounting
+                elif atom == "account":
+                    try:
+                        # print(args)
+                        args.func(args)
+                    except AttributeError:
+                        atomAccount.print_help()
+                # TODO
+                elif atom == "validator":
+                    pass
+                elif atom == "guide":
+                    try:
+                        # print(args)
+                        args.func(args)
+                    except AttributeError:
+                        guide.print_help()
+
+            else:
+                atomParentParser.print_help()
+
     else:
         parentParser.print_help()

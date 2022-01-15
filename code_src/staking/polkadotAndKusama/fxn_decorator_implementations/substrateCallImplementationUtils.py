@@ -1,7 +1,6 @@
 import sys
-from config import activeConfig
 from substrateinterface import Keypair
-from code_src.staking.dot.fxn_decorator_implementations.accountImplementation import AccountImplementation
+from code_src.staking.polkadotAndKusama.fxn_decorator_implementations.accountImplementation import AccountImplementation
 
 
 class BondingValidator:
@@ -12,8 +11,9 @@ class BondingValidator:
     The other functions are primarily used to execute validateAccountDataBeforeBonding()
     """
 
-    def __init__(self, logger, ss58_address, tokenNumber):
+    def __init__(self, config, logger, ss58_address, tokenNumber):
         # TODO: basic validations in init
+        self.activeConfig = config
         self.logger = logger
         self.logger.info("Validating account data for bonding")
         self.ss58_address = ss58_address
@@ -47,9 +47,9 @@ class BondingValidator:
     def validateDecimalPoint(self):
         # check decimal writing
         lenNumberAfterDecimalPoint = len(str(self.tokenNumber).split(".")[1])
-        if lenNumberAfterDecimalPoint > activeConfig.coinDecimalPlacesLength:
+        if lenNumberAfterDecimalPoint > self.activeConfig.coinDecimalPlacesLength:
             self.logger.warning(
-                f"wrong token value token take max {activeConfig.coinDecimalPlacesLength} number after decimal point")
+                f"wrong token value token take max {self.activeConfig.coinDecimalPlacesLength} number after decimal point")
             sys.exit(0)
 
     def validateBondSize(self):
@@ -59,9 +59,9 @@ class BondingValidator:
         TODO: the minimum to stake and the minimum to bond are not the same I assume, which should we be using?
         TODO: confirm that the decimals of tokenNumber and stakeMin are directly comparable?
         """
-        if self.tokenNumber < activeConfig.stakeMinimumAmount:
+        if self.tokenNumber < self.activeConfig.stakeMinimumAmount:
             self.logger.warning(
-                f"You are trying to bond {self.tokenNumber}, but the minimum required for bonding is {activeConfig.stakeMinimumAmount} {activeConfig.coinName}\n")
+                f"You are trying to bond {self.tokenNumber}, but the minimum required for bonding is {self.activeConfig.stakeMinimumAmount} {self.activeConfig.coinName}\n")
             sys.exit(0)
 
     def validateAcctBalanceForBonding(self):
@@ -69,27 +69,30 @@ class BondingValidator:
         Function calculates and compares account balance vs minimum balance needed to stake
         """
         # check requirements
-        accountToVerify = AccountImplementation(self.logger, ss58_address=self.ss58_address)
+        accountToVerify = AccountImplementation(config=self.activeConfig, logger=self.logger,
+                                                ss58_address=self.ss58_address)
         totalAccountBalance = accountToVerify.getAccountBalance("bonding")
-        transactionFees = TransactionFees(ss58_address=self.ss58_address, dest=activeConfig.activeValidator[0],
+        transactionFees = TransactionFees(config=self.activeConfig, ss58_address=self.ss58_address,
+                                          dest=self.activeConfig.activeValidator[0],
                                           value=self.tokenNumber).estimateTxFees()
 
         # we need always to reserve existentialDeposit
-        if totalAccountBalance < (self.tokenNumber + transactionFees + activeConfig.existentialDeposit):
-            tokenNumber = self.tokenNumber / activeConfig.coinDecimalPlaces
+        if totalAccountBalance < (self.tokenNumber + transactionFees + self.activeConfig.existentialDeposit):
+            tokenNumber = self.tokenNumber / self.activeConfig.coinDecimalPlaces
             self.logger.warning(
                 f"Low balance\n"
-                f"Actual balance is : {totalAccountBalance} {activeConfig.coinName}\n"
-                f"Requested amount : {tokenNumber} {activeConfig.coinName}\n"
-                f"Your account needs to have a minimum of {activeConfig.existentialDeposit} "
-                f"{activeConfig.coinName} plus the requested amount plus the transaction fees and it does not.\nYou need at least: "
-                f"{activeConfig.existentialDeposit} + {tokenNumber} + {transactionFees} = {activeConfig.existentialDeposit + tokenNumber + transactionFees}, "
+                f"Actual balance is : {totalAccountBalance} {self.activeConfig.coinName}\n"
+                f"Requested amount : {tokenNumber} {self.activeConfig.coinName}\n"
+                f"Your account needs to have a minimum of {self.activeConfig.existentialDeposit} "
+                f"{self.activeConfig.coinName} plus the requested amount plus the transaction fees and it does not.\nYou need at least: "
+                f"{self.activeConfig.existentialDeposit} + {tokenNumber} + {transactionFees} = {self.activeConfig.existentialDeposit + tokenNumber + transactionFees}, "
                 f"but the account balance is only {totalAccountBalance}")
             sys.exit(0)
 
 
 class TransactionFees:
-    def __init__(self, ss58_address, dest, value):
+    def __init__(self, config, ss58_address, dest, value):
+        self.activeConfig = config
         self.ss58_address = ss58_address
         self.dest = dest
         self.value = value
@@ -97,16 +100,16 @@ class TransactionFees:
     def estimateTxFees(self):
         keypair = Keypair(ss58_address=self.ss58_address)
 
-        call = activeConfig.activeSubstrate.compose_call(
+        call = self.activeConfig.activeSubstrate.compose_call(
             call_module='Balances',
             call_function='transfer',
             call_params={
                 'dest': self.dest,
-                'value': self.value * activeConfig.coinDecimalPlaces
+                'value': self.value * self.activeConfig.coinDecimalPlaces
             }
         )
-        payment_info = activeConfig.activeSubstrate.get_payment_info(call=call, keypair=keypair)[
-                           'partialFee'] / activeConfig.coinDecimalPlaces
+        payment_info = self.activeConfig.activeSubstrate.get_payment_info(call=call, keypair=keypair)[
+                           'partialFee'] / self.activeConfig.coinDecimalPlaces
         return payment_info
 
 
