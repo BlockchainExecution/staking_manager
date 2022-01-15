@@ -26,9 +26,8 @@ run `python test/endToEndTests.py`
 	- TODO: Setting up and testing on local network (see Testing Tools below)
 
 ### Recommended Reading
-* DOT (and KSM): https://wiki.polkadot.network/docs/learn-nominator and 
-https://wiki.polkadot.network/docs/maintain-guides-how-to-nominate-polkadot
-* ...
+* DOT: https://wiki.polkadot.network/docs/maintain-guides-how-to-nominate-polkadot
+* KSM: https://wiki.polkadot.network/docs/maintain-guides-how-to-nominate-kusama
 
 
 ### Codebase Notes:
